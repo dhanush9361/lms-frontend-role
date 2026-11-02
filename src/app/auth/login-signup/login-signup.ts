@@ -122,6 +122,17 @@ const passwordDiffersFromEmailValidator: ValidatorFn = (
   return email && password && email === password ? { passwordMatchesEmail: true } : null;
 };
 
+/** local@domain.tld - domain needs a dot and the TLD needs 2+ letters (rejects "name@gmail.c" and "a@b"). */
+const EMAIL_PATTERN =
+  /^[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
+
+/** Replacement for Validators.email; same `{ email: true }` error key. */
+const strictEmailValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const value = String(control.value ?? '').trim();
+  if (!value) return null; // empty is handled by Validators.required
+  return EMAIL_PATTERN.test(value) ? null : { email: true };
+};
+
 const phoneNumberValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const value = String(control.value ?? '');
   if (!value) return null;
@@ -202,7 +213,7 @@ export class LoginSignup {
   protected readonly loginForm = new FormGroup({
     email: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.email, Validators.maxLength(LIMITS.loginEmail)],
+      validators: [Validators.required, strictEmailValidator, Validators.maxLength(LIMITS.loginEmail)],
     }),
     password: new FormControl('', {
       nonNullable: true,
@@ -218,7 +229,7 @@ export class LoginSignup {
   protected readonly forgotForm = new FormGroup({
     email: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.email, Validators.maxLength(254)],
+      validators: [Validators.required, strictEmailValidator, Validators.maxLength(254)],
     }),
   });
 
@@ -243,7 +254,11 @@ export class LoginSignup {
       }),
       email: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.email, Validators.maxLength(LIMITS.signupEmail)],
+        validators: [
+          Validators.required,
+          strictEmailValidator,
+          Validators.maxLength(LIMITS.signupEmail),
+        ],
       }),
       countryCode: new FormControl('', {
         nonNullable: true,
@@ -345,7 +360,7 @@ export class LoginSignup {
       }
       case 'email':
         if (errors['maxlength']) return `Email ID must not exceed ${LIMITS.signupEmail} characters.`;
-        return 'Enter a valid email address.';
+        return 'Enter a valid email address (e.g. name@example.com).';
       case 'phoneNumber':
         if (errors['phoneFormat']) return 'Enter a valid phone number.';
         if (errors['phoneLength']) {

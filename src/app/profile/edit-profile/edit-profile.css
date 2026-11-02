@@ -1,0 +1,80 @@
+:host {
+  display: block;
+}
+
+/* ------------------------------------------------------------------ */
+/* Floating label with curved notch (same effect as signup / login)    */
+/* Add this to edit-profile.css                                        */
+/* ------------------------------------------------------------------ */
+.float-label {
+  --label-bg: #ffffff; /* must match the white form container behind the inputs */
+  --notch-r: 4px;      /* bottom curve (notch) */
+  --notch-top-r: 5px;  /* top curve next to the notch */
+  --notch-top: -3px;   /* label top offset when floated */
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0;
+  font-size: 14px;
+  color: #4a4f52;
+  pointer-events: none;
+  transition: all 200ms;
+}
+
+/* Textareas: label starts at the top-left instead of the vertical centre */
+.float-label-area {
+  top: 14px;
+  transform: none;
+}
+
+.peer:focus ~ .float-label,
+.peer:not(:placeholder-shown) ~ .float-label {
+  left: 20px; /* inputs have a 14px corner radius, so start a little further in */
+  top: var(--notch-top);
+  transform: none;
+  padding: 0 11px 3px 9px;
+  font-size: 11px;
+  line-height: 1;
+  background: var(--label-bg);
+  border-radius: 0 0 var(--notch-r) var(--notch-r);
+}
+
+.float-label::before,
+.float-label::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--notch-top) * -1); /* always = input top edge */
+  width: var(--notch-top-r);
+  height: var(--notch-top-r);
+  display: none;
+}
+
+.peer:focus ~ .float-label::before,
+.peer:focus ~ .float-label::after,
+.peer:not(:placeholder-shown) ~ .float-label::before,
+.peer:not(:placeholder-shown) ~ .float-label::after {
+  display: block;
+}
+
+.float-label::before {
+  left: calc(var(--notch-top-r) * -1);
+  background: radial-gradient(circle at 0 100%, transparent var(--notch-top-r), var(--label-bg) calc(var(--notch-top-r) + 0.5px));
+}
+
+.float-label::after {
+  right: calc(var(--notch-top-r) * -1);
+  background: radial-gradient(circle at 100% 100%, transparent var(--notch-top-r), var(--label-bg) calc(var(--notch-top-r) + 0.5px));
+}
+
+/* Push typed text down a little so it doesn't touch the notch */
+.peer:focus,
+.peer:not(:placeholder-shown) {
+  padding-top: 8px;
+}
+
+/* Textareas keep their own top padding so the text clears the floated label */
+textarea.peer:focus,
+textarea.peer:not(:placeholder-shown) {
+  padding-top: 14px;
+}

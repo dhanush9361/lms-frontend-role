@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { roleGuard } from './guards/role.guard';
+
 export const routes: Routes = [
   {
     path: '',
@@ -29,6 +31,8 @@ export const routes: Routes = [
   // ---------- Super-admin-dashboard ----------
   {
     path: 'super-admin-dashboard',
+    // Only SUPER_ADMIN may open this dashboard or any of its child pages.
+    canActivate: [roleGuard('SUPER_ADMIN')],
     loadComponent: () =>
       import('./dashboard/super-admin-dashboard/super-admin-dashboard').then((m) => m.SuperAdminDashboard),
     title: 'Super Admin Dashboard',
@@ -134,6 +138,13 @@ export const routes: Routes = [
       (m) => m.CourseContentViewer,
     ),
   title: 'Course Content',
+},
+
+{
+  path: 'edit-profile',
+  loadComponent: () =>
+    import('./profile/edit-profile/edit-profile').then((m) => m.EditProfile),
+  title: 'Edit Profile',
 },
 
     ],

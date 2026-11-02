@@ -142,24 +142,12 @@
         </svg>
       </button>
 
-      <!-- Settings -->
-      <button
-        type="button"
-        class="grid h-9 w-9 place-items-center rounded-full text-neutral-500 transition hover:bg-black/5 hover:text-[#3e8d99]"
-        aria-label="Settings"
-        title="Settings"
-        (click)="openSettings()"
-      >
-        <svg viewBox="0 0 24 24" class="h-[18px] w-[18px] fill-none stroke-current" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-      </button>
+      
 
       <span class="mx-1 h-6 w-px bg-neutral-200" aria-hidden="true"></span>
 
       <!-- Account menu -->
-      <div class="relative" (click)="$event.stopPropagation()">
+      <div #accountMenu class="relative">
         <button
           type="button"
           class="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 transition hover:bg-black/5"
@@ -177,23 +165,32 @@
         </button>
 
         @if (accountMenuOpen()) {
-          <div
-            class="absolute right-0 top-12 w-48 overflow-hidden rounded-xl bg-white py-1 shadow-[0_14px_25px_rgba(0,0,0,.15)] ring-1 ring-black/5"
-            role="menu"
-          >
-            <div class="border-b border-neutral-100 px-4 py-2.5">
-              <p class="truncate text-xs font-semibold text-[#333]">{{ displayName() }}</p>
-              <p class="truncate text-[11px] text-neutral-400">{{ roleLabel() }}</p>
-            </div>
-            <button
-              type="button"
-              role="menuitem"
-              class="block w-full px-4 py-2.5 text-left text-xs text-[#555] transition hover:bg-[#f6f6f6]"
-              (click)="logout()"
-            >
-              Log out
-            </button>
-          </div>
+  <div
+    class="absolute right-0 top-12 w-48 overflow-hidden rounded-xl bg-white py-1 shadow-[0_14px_25px_rgba(0,0,0,.15)] ring-1 ring-black/5"
+    role="menu"
+  >
+    <div class="border-b border-neutral-100 px-4 py-2.5">
+      <p class="truncate text-xs font-semibold text-[#333]">{{ displayName() }}</p>
+      <p class="truncate text-[11px] text-neutral-400">{{ roleLabel() }}</p>
+    </div>
+    <a
+      role="menuitem"
+      routerLink="/admin-dashboard/edit-profile"
+      class="block w-full px-4 py-2.5 text-left text-xs text-[#555] transition hover:bg-[#f6f6f6]"
+      (click)="accountMenuOpen.set(false)"
+    >
+      Edit Profile
+    </a>
+    <button
+      type="button"
+      role="menuitem"
+      class="block w-full px-4 py-2.5 text-left text-xs text-[#555] transition hover:bg-[#f6f6f6]"
+      (click)="logout()"
+    >
+      Log out
+    </button>
+  </div>
+
         }
       </div>
     </div>

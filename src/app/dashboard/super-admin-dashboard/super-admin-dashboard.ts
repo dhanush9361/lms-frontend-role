@@ -1,7 +1,15 @@
 import { ChangeDetectionStrategy, Component, HostListener, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter, map, startWith } from 'rxjs/operators';
 
 import { AuthService } from '../../services/auth';
+
+/** One item of the header breadcrumb. `link: null` = not clickable (current page or plain parent). */
+interface Breadcrumb {
+  label: string;
+  link: string[] | null;
+}
 
 @Component({
   selector: 'app-super-admin-dashboard',
@@ -26,6 +34,55 @@ export class SuperAdminDashboard {
     const first = parts[0].charAt(0);
     const last = parts.length > 1 ? parts[parts.length - 1].charAt(0) : '';
     return (first + last).toUpperCase();
+  });
+
+  // ---------- header: breadcrumb ----------
+  /** Current URL, kept in sync on every completed navigation. */
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map(event => event.urlAfterRedirects),
+      startWith(this.router.url),
+    ),
+    { initialValue: this.router.url },
+  );
+
+  /**
+   * Breadcrumb shown in the header, right after the logo.
+   * Only pages that need one return items; every other page returns [] (nothing rendered).
+   * To add another page later, add one more `if` here.
+   */
+  readonly breadcrumbs = computed<Breadcrumb[]>(() => {
+    const path = this.currentUrl().split('#')[0].split('?')[0];
+    const packageList = ['/super-admin-dashboard', 'package'];
+
+    // /super-admin-dashboard/package
+    if (/^\/super-admin-dashboard\/package\/?$/.test(path)) {
+      return [
+        { label: 'Content Management', link: null },
+        { label: 'Package List', link: null },
+      ];
+    }
+
+    // /super-admin-dashboard/package/create/permissions
+    if (/^\/super-admin-dashboard\/package\/create\/permissions\/?$/.test(path)) {
+      return [
+        { label: 'Content Management', link: null },
+        { label: 'Package List', link: packageList },
+        { label: 'Configure Permissions', link: null },
+      ];
+    }
+
+    // /super-admin-dashboard/package/:id/admins
+    if (/^\/super-admin-dashboard\/package\/[^/]+\/admins\/?$/.test(path)) {
+      return [
+        { label: 'Content Management', link: null },
+        { label: 'Package List', link: packageList },
+        { label: 'Assign Admin', link: null },
+      ];
+    }
+
+    return [];
   });
 
   // ---------- header: account dropdown ----------

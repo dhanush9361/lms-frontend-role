@@ -1,0 +1,427 @@
+<main class="relative z-10 w-full px-4 pb-7 sm:px-6 lg:px-10">
+<section class="w-full" aria-labelledby="profile-title">
+  <h1 id="profile-title" class="px-1.5 pb-[11px] pt-[14px] text-[13px] font-normal text-[#4a4f52]">
+    You can now make changes on the your profile
+  </h1>
+
+  <form
+    class="flex w-full flex-col gap-6 rounded-[14px] bg-white p-5 lg:flex-row lg:gap-[26px] lg:pl-[27px]"
+    [formGroup]="form"
+    (ngSubmit)="saveProfile()"
+    novalidate
+  >
+    <!-- ============ FORM ============ -->
+    <div class="flex min-w-0 flex-1 flex-col">
+      <div class="grid grid-cols-2 gap-x-[19px] gap-y-5 sm:grid-cols-4">
+        <!-- First Name -->
+        <div class="col-span-2">
+          <div class="relative">
+            <input
+              id="firstName"
+              formControlName="firstName"
+              type="text"
+              autocomplete="given-name"
+              maxlength="50"
+              placeholder=" "
+              required
+              [attr.aria-invalid]="fieldError('firstName') ? 'true' : null"
+              [attr.aria-describedby]="fieldError('firstName') ? 'firstName-error' : null"
+              class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
+            />
+            <label for="firstName" class="float-label">First Name<span class="text-[#e5484d]">*</span></label>
+          </div>
+          @if (fieldError('firstName'); as error) {
+            <span id="firstName-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+          }
+        </div>
+
+        <!-- Last Name -->
+        <div class="col-span-2">
+          <div class="relative">
+            <input
+              id="lastName"
+              formControlName="lastName"
+              type="text"
+              autocomplete="family-name"
+              maxlength="50"
+              placeholder=" "
+              required
+              [attr.aria-invalid]="fieldError('lastName') ? 'true' : null"
+              [attr.aria-describedby]="fieldError('lastName') ? 'lastName-error' : null"
+              class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
+            />
+            <label for="lastName" class="float-label">Last Name<span class="text-[#e5484d]">*</span></label>
+          </div>
+          @if (fieldError('lastName'); as error) {
+            <span id="lastName-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+          }
+        </div>
+
+        <!-- Email ID -->
+        <div class="col-span-2">
+          <div class="relative">
+            <input
+              id="email"
+              formControlName="email"
+              type="email"
+              autocomplete="email"
+              maxlength="100"
+              placeholder=" "
+              required
+              [attr.aria-invalid]="fieldError('email') ? 'true' : null"
+              [attr.aria-describedby]="fieldError('email') ? 'email-error' : null"
+              class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
+            />
+            <label for="email" class="float-label">Email ID<span class="text-[#e5484d]">*</span></label>
+          </div>
+          @if (fieldError('email'); as error) {
+            <span id="email-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+          }
+        </div>
+
+        <!-- Organization Name (admin + instructor only) -->
+        @if (showsOrganizationFields()) {
+          <div class="col-span-2">
+            <div class="relative">
+              <input
+                id="organizationName"
+                formControlName="organizationName"
+                type="text"
+                maxlength="500"
+                placeholder=" "
+                [attr.aria-invalid]="fieldError('organizationName') ? 'true' : null"
+                [attr.aria-describedby]="fieldError('organizationName') ? 'organizationName-error' : null"
+                class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
+              />
+              <label for="organizationName" class="float-label">Organization Name</label>
+            </div>
+            @if (fieldError('organizationName'); as error) {
+              <span id="organizationName-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+            }
+          </div>
+        }
+
+        <!-- Time Zone (custom dropdown) -->
+        <div class="relative col-span-2" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            id="timeZone"
+            class="flex h-11 w-full cursor-pointer items-center justify-between gap-2 rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-left text-sm text-[#4a4f52] outline-none transition hover:bg-[#eeeeee] focus-visible:border-[#54b4c3] focus-visible:bg-white focus-visible:ring-[3px] focus-visible:ring-[#54b4c3]/20"
+            aria-label="Time Zone"
+            aria-haspopup="menu"
+            aria-controls="timeZone-options"
+            [attr.aria-expanded]="openDropdown() === 'timeZone'"
+            (click)="toggleDropdown('timeZone')"
+          >
+            <span class="min-w-0 flex-1 truncate">{{ form.controls.timeZone.value ? form.controls.timeZone.value.replaceAll('_', ' ') : 'Time Zone' }}</span>
+            <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0 fill-none stroke-[#777] transition-transform duration-200" [class.rotate-180]="openDropdown() === 'timeZone'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          @if (openDropdown() === 'timeZone') {
+            <div id="timeZone-options" class="absolute left-0 top-[calc(100%+4px)] z-50 max-h-52 w-full overflow-y-auto rounded-lg border border-neutral-100 bg-white py-1 shadow-xl" role="menu" aria-label="Time Zone">
+              @for (timeZone of timeZones; track timeZone) {
+                <button
+                  type="button"
+                  role="menuitem"
+                  class="block min-h-9 w-full cursor-pointer px-3 text-left text-[13px] text-[#4a4f52] outline-none hover:bg-[#f6f6f6] focus-visible:bg-[#eef8fa]"
+                  [class.font-semibold]="form.controls.timeZone.value === timeZone"
+                  (click)="chooseOption('timeZone', timeZone)"
+                >{{ timeZone.replaceAll('_', ' ') }}</button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Organization Address (admin + instructor only) -->
+        @if (showsOrganizationFields()) {
+          <div class="col-span-2 sm:col-span-4">
+            <div class="relative">
+              <textarea
+                id="organizationAddress"
+                formControlName="organizationAddress"
+                autocomplete="off"
+                maxlength="500"
+                placeholder=" "
+                [attr.aria-invalid]="fieldError('organizationAddress') ? 'true' : null"
+                [attr.aria-describedby]="fieldError('organizationAddress') ? 'organizationAddress-error' : null"
+                class="peer block h-[74px] w-full resize-none rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] pb-6 pt-[14px] text-sm text-[#353a3d] outline-none focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
+              ></textarea>
+              <label for="organizationAddress" class="float-label float-label-area">OrganizationAddress</label>
+              <span class="pointer-events-none absolute bottom-2 right-[18px] text-[11px] text-[#91979a]">Maximum 500 characters</span>
+            </div>
+            @if (fieldError('organizationAddress'); as error) {
+              <span id="organizationAddress-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+            }
+          </div>
+        }
+
+        <!-- Personal Address -->
+        <div class="col-span-2 sm:col-span-4">
+          <div class="relative">
+            <textarea
+              id="personalAddress"
+              formControlName="personalAddress"
+              autocomplete="street-address"
+              maxlength="500"
+              placeholder=" "
+              [attr.aria-invalid]="fieldError('personalAddress') ? 'true' : null"
+              [attr.aria-describedby]="fieldError('personalAddress') ? 'personalAddress-error' : null"
+              class="peer block h-[74px] w-full resize-none rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] pb-6 pt-[14px] text-sm text-[#353a3d] outline-none focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
+            ></textarea>
+            <label for="personalAddress" class="float-label float-label-area">Personal Address</label>
+            <span class="pointer-events-none absolute bottom-2 right-[18px] text-[11px] text-[#91979a]">Maximum 500 characters</span>
+          </div>
+          @if (fieldError('personalAddress'); as error) {
+            <span id="personalAddress-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+          }
+        </div>
+
+        <!-- Country (custom dropdown) -->
+        <div class="relative col-span-1" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            id="country"
+            class="flex h-11 w-full cursor-pointer items-center justify-between gap-2 rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-left text-sm text-[#4a4f52] outline-none transition hover:bg-[#eeeeee] focus-visible:border-[#54b4c3] focus-visible:bg-white focus-visible:ring-[3px] focus-visible:ring-[#54b4c3]/20"
+            aria-label="Country"
+            aria-haspopup="menu"
+            aria-controls="country-options"
+            [attr.aria-expanded]="openDropdown() === 'country'"
+            (click)="toggleDropdown('country')"
+          >
+            <span class="min-w-0 flex-1 truncate">{{ form.controls.country.value || 'Country' }}</span>
+            <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0 fill-none stroke-[#777] transition-transform duration-200" [class.rotate-180]="openDropdown() === 'country'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          @if (openDropdown() === 'country') {
+            <div id="country-options" class="absolute bottom-[calc(100%+4px)] left-0 z-50 max-h-52 w-full min-w-44 overflow-y-auto rounded-lg border border-neutral-100 bg-white py-1 shadow-xl" role="menu" aria-label="Country">
+              @for (country of countryOptions; track country) {
+                <button
+                  type="button"
+                  role="menuitem"
+                  class="block min-h-9 w-full cursor-pointer px-3 text-left text-[13px] text-[#4a4f52] outline-none hover:bg-[#f6f6f6] focus-visible:bg-[#eef8fa]"
+                  [class.font-semibold]="form.controls.country.value === country"
+                  (click)="chooseOption('country', country)"
+                >{{ country }}</button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- State (dropdown when the country has a state list, text box otherwise) -->
+        @if (stateOptions().length) {
+          <div class="relative col-span-1" (click)="$event.stopPropagation()">
+            <button
+              type="button"
+              id="state"
+              class="flex h-11 w-full cursor-pointer items-center justify-between gap-2 rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-left text-sm text-[#4a4f52] outline-none transition hover:bg-[#eeeeee] focus-visible:border-[#54b4c3] focus-visible:bg-white focus-visible:ring-[3px] focus-visible:ring-[#54b4c3]/20"
+              aria-label="State"
+              aria-haspopup="menu"
+              aria-controls="state-options"
+              [attr.aria-expanded]="openDropdown() === 'state'"
+              (click)="toggleDropdown('state')"
+            >
+              <span class="min-w-0 flex-1 truncate">{{ form.controls.state.value || 'State' }}</span>
+              <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0 fill-none stroke-[#777] transition-transform duration-200" [class.rotate-180]="openDropdown() === 'state'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            </button>
+            @if (openDropdown() === 'state') {
+              <div id="state-options" class="absolute left-0 top-[calc(100%+4px)] z-50 max-h-52 w-full min-w-44 overflow-y-auto rounded-lg border border-neutral-100 bg-white py-1 shadow-xl" role="menu" aria-label="State">
+                @for (state of stateOptions(); track state) {
+                  <button
+                    type="button"
+                    role="menuitem"
+                    class="block min-h-9 w-full cursor-pointer px-3 text-left text-[13px] text-[#4a4f52] outline-none hover:bg-[#f6f6f6] focus-visible:bg-[#eef8fa]"
+                    [class.font-semibold]="form.controls.state.value === state"
+                    (click)="chooseOption('state', state)"
+                  >{{ state }}</button>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="relative col-span-1">
+            <input
+              id="state"
+              formControlName="state"
+              type="text"
+              autocomplete="address-level1"
+              placeholder=" "
+              class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20"
+            />
+            <label for="state" class="float-label">State</label>
+          </div>
+        }
+
+        <!-- City -->
+        <div class="relative col-span-1">
+          <input
+            id="city"
+            formControlName="city"
+            type="text"
+            autocomplete="address-level2"
+            placeholder=" "
+            class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20"
+          />
+          <label for="city" class="float-label">City</label>
+        </div>
+
+        <!-- Postal Code -->
+        <div class="col-span-1">
+          <div class="relative">
+            <input
+              id="postalCode"
+              formControlName="postalCode"
+              type="text"
+              autocomplete="postal-code"
+              maxlength="20"
+              placeholder=" "
+              [attr.aria-invalid]="fieldError('postalCode') ? 'true' : null"
+              [attr.aria-describedby]="fieldError('postalCode') ? 'postalCode-error' : null"
+              class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
+            />
+            <label for="postalCode" class="float-label">Postal Code</label>
+          </div>
+          @if (fieldError('postalCode'); as error) {
+            <span id="postalCode-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+          }
+        </div>
+
+        <!-- Country Code + Phone Number row -->
+        <div class="col-span-2 flex gap-[19px] sm:col-span-4">
+          <!-- Country Code (custom dropdown, comes first, phone number follows it) -->
+          <div class="w-[120px] shrink-0">
+            <div class="relative" (click)="$event.stopPropagation()">
+              <button
+                type="button"
+                id="countryCode"
+                class="flex h-11 w-full cursor-pointer items-center justify-between gap-2 rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-left text-sm text-[#4a4f52] outline-none transition hover:bg-[#eeeeee] focus-visible:border-[#54b4c3] focus-visible:bg-white focus-visible:ring-[3px] focus-visible:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
+                aria-label="Country Code"
+                aria-haspopup="menu"
+                aria-controls="countryCode-options"
+                [attr.aria-expanded]="openDropdown() === 'countryCode'"
+                [attr.aria-invalid]="fieldError('countryCode') ? 'true' : null"
+                [attr.aria-describedby]="fieldError('countryCode') ? 'countryCode-error' : null"
+                (click)="toggleDropdown('countryCode')"
+              >
+                <span class="min-w-0 flex-1 truncate">{{ form.controls.countryCode.value || 'Code*' }}</span>
+                <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0 fill-none stroke-[#777] transition-transform duration-200" [class.rotate-180]="openDropdown() === 'countryCode'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+              </button>
+              @if (openDropdown() === 'countryCode') {
+                <div id="countryCode-options" class="absolute bottom-[calc(100%+4px)] left-0 z-50 max-h-52 w-full min-w-28 overflow-y-auto rounded-lg border border-neutral-100 bg-white py-1 shadow-xl" role="menu" aria-label="Country Code">
+                  @for (countryCode of countryCodeOptions(); track countryCode) {
+                    <button
+                      type="button"
+                      role="menuitem"
+                      class="block min-h-9 w-full cursor-pointer px-3 text-left text-[13px] text-[#4a4f52] outline-none hover:bg-[#f6f6f6] focus-visible:bg-[#eef8fa]"
+                      [class.font-semibold]="form.controls.countryCode.value === countryCode"
+                      (click)="chooseOption('countryCode', countryCode)"
+                    >{{ countryCode }}</button>
+                  }
+                </div>
+              }
+            </div>
+            @if (fieldError('countryCode'); as error) {
+              <span id="countryCode-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+            }
+          </div>
+
+          <!-- Phone Number (right after the country code) -->
+          <div class="min-w-0 flex-1">
+            <div class="relative">
+              <input
+                id="phoneNumber"
+                formControlName="phoneNumber"
+                type="tel"
+                inputmode="numeric"
+                autocomplete="tel-national"
+                [attr.maxlength]="limits.phoneInput"
+                placeholder=" "
+                required
+                [attr.aria-invalid]="fieldError('phoneNumber') ? 'true' : null"
+                [attr.aria-describedby]="fieldError('phoneNumber') ? 'phoneNumber-error' : null"
+                class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
+              />
+              <label for="phoneNumber" class="float-label">Ph.No<span class="text-[#e5484d]">*</span></label>
+            </div>
+            @if (fieldError('phoneNumber'); as error) {
+              <span id="phoneNumber-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="mt-6 flex justify-center gap-5 lg:mt-auto lg:pt-6">
+        <button type="button" (click)="cancel()" class="h-[29px] w-[123px] cursor-pointer rounded-full bg-[#f1f2f2] text-xs font-medium text-[#3d4144] transition hover:bg-[#e6e8e8] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#267a89]/45">Cancel</button>
+        <button type="submit" [disabled]="saving()" class="h-[29px] w-[123px] cursor-pointer rounded-full bg-[#62bccb] text-xs font-medium text-white transition hover:bg-[#52a9b8] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#267a89]/45 disabled:cursor-not-allowed disabled:opacity-60">Save</button>
+      </div>
+
+      @if (saveError()) {
+        <p class="fixed left-1/2 top-[76px] z-[70] max-w-[90vw] -translate-x-1/2 rounded-xl bg-red-700 px-4 py-1.5 text-center text-[13px] leading-5 text-white shadow-lg" role="alert" aria-live="assertive">{{ saveError() }}</p>
+      }
+      @if (saveSuccess()) {
+        <p class="fixed left-1/2 top-[76px] z-[70] max-w-[90vw] -translate-x-1/2 rounded-xl bg-emerald-700 px-4 py-1.5 text-center text-[13px] leading-5 text-white shadow-lg" role="status" aria-live="polite">{{ saveSuccess() }}</p>
+      }
+    </div>
+
+    <!-- ============ PREVIEW CARD (live from DB values / form) ============ -->
+    <aside aria-label="Profile preview" class="relative isolate w-full shrink-0 overflow-hidden rounded-[18px] bg-[#1e2224] text-white lg:w-[360px]">
+      @if (backgroundPicturePreview()) {
+        <img [src]="backgroundPicturePreview()" alt="" class="pointer-events-none absolute inset-0 -z-20 h-full w-full object-cover" />
+      }
+      <div class="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#1e2224]/80 to-[#131719]/90"></div>
+
+      <div class="flex h-full flex-col px-[22px] pb-6 pt-8">
+        <!-- Identity -->
+        <div class="flex items-center gap-[10px]">
+          <div class="relative size-[154px] shrink-0">
+            <div class="grid size-full place-items-center overflow-hidden rounded-full border-4 border-[#4aa5b4] bg-gradient-to-br from-[#6bbcc8] to-[#304959] text-4xl font-bold">
+              @if (profilePicturePreview()) {
+                <img [src]="profilePicturePreview()" alt="Selected profile picture preview" class="h-full w-full object-cover" />
+              } @else {
+                <span aria-hidden="true">{{ initials() }}</span>
+              }
+            </div>
+            <details class="absolute bottom-2 right-2">
+              <summary class="grid size-7 cursor-pointer list-none place-items-center rounded-full bg-white text-slate-700 shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" aria-label="Edit profile and background pictures">
+                <svg aria-hidden="true" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z" /></svg>
+              </summary>
+              <div class="absolute left-0 top-full z-50 mt-2 min-w-48 rounded-md bg-white py-1 text-slate-800 shadow-lg">
+                <label class="block cursor-pointer px-3 py-2 text-sm hover:bg-slate-100 focus-within:bg-slate-100">
+                  Edit Profile Picture
+                  <input class="sr-only" type="file" accept="image/jpeg,image/png,image/webp" (change)="onProfilePictureSelected($event)" />
+                </label>
+                <label class="block cursor-pointer px-3 py-2 text-sm hover:bg-slate-100 focus-within:bg-slate-100">
+                  Edit Background Picture
+                  <input class="sr-only" type="file" accept="image/jpeg,image/png,image/webp" (change)="onBackgroundPictureSelected($event)" />
+                </label>
+              </div>
+            </details>
+          </div>
+
+          <div class="min-w-0">
+            <h2 class="break-words text-[28px] font-bold leading-9 tracking-wide">{{ form.controls.firstName.value }} {{ form.controls.lastName.value }}</h2>
+            <p class="mt-1 text-[13px] font-bold leading-5">{{ roleLabel() }}</p>
+            <p class="mt-[7px] break-all text-[13px] leading-4 text-white/95">{{ form.controls.email.value || 'Email not provided' }}</p>
+          </div>
+        </div>
+
+        @if (pictureError()) {
+          <p class="mt-3 text-[11px] font-medium text-[#ffd2ce]" role="alert">{{ pictureError() }}</p>
+        }
+
+        <!-- Details -->
+        <dl class="mt-5 flex flex-col gap-4 text-[13px] leading-[18px]">
+          @if (showsOrganizationFields()) {
+            <div class="grid grid-cols-[129px_1fr]"><dt>Organization :</dt><dd class="m-0 break-words">{{ form.controls.organizationName.value || 'Not provided' }}</dd></div>
+          }
+          <div class="grid grid-cols-[129px_1fr]"><dt>Time Zone :</dt><dd class="m-0 break-words">{{ form.controls.timeZone.value || 'Not provided' }}</dd></div>
+          <div class="grid grid-cols-[129px_1fr]"><dt>Address :</dt><dd class="m-0 break-words">{{ form.controls.personalAddress.value || 'Not provided' }}</dd></div>
+          <div class="grid grid-cols-[129px_1fr]"><dt>Country :</dt><dd class="m-0 break-words">{{ form.controls.country.value || 'Not provided' }}</dd></div>
+          <div class="grid grid-cols-[129px_1fr]"><dt>State :</dt><dd class="m-0 break-words">{{ form.controls.state.value || 'Not provided' }}</dd></div>
+          <div class="grid grid-cols-[129px_1fr]"><dt>City :</dt><dd class="m-0 break-words">{{ form.controls.city.value || 'Not provided' }}</dd></div>
+          <div class="grid grid-cols-[129px_1fr]"><dt>Postal Code :</dt><dd class="m-0 break-words">{{ form.controls.postalCode.value || 'Not provided' }}</dd></div>
+          <div class="grid grid-cols-[129px_1fr]"><dt>Phone Number :</dt><dd class="m-0 break-words">{{ form.controls.phoneNumber.value || 'Not provided' }}</dd></div>
+        </dl>
+      </div>
+    </aside>
+  </form>
+</section>
+</main>

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { EMPTY, interval, timer } from 'rxjs';
@@ -114,8 +114,11 @@ export class AdminDashboard {
     const params = new URLSearchParams(query);
     const courseList = ['/admin-dashboard', 'courses'];
 
-    if (/^\/admin-dashboard\/courses\/?$/.test(path)) {
-      if (params.has('organize')) {
+    // Organize Modules is reachable two ways: /courses?organize=:id and /courses/:id/organize
+    const isOrganizeRoute = /^\/admin-dashboard\/courses\/\d+\/organize\/?$/.test(path);
+
+    if (isOrganizeRoute || /^\/admin-dashboard\/courses\/?$/.test(path)) {
+      if (isOrganizeRoute || params.has('organize')) {
         return [
           { label: 'Content Management', link: null, plain: true },
           { label: 'Course List', link: courseList, plain: true },
@@ -174,7 +177,19 @@ export class AdminDashboard {
         { label: 'Question Bank', link: null, plain: true },
       ];
     }
+
+
+        // Edit Profile (/admin-dashboard/edit-profile)
+    // Flow: Dashboard > Edit Profile > User Profile Management
+    if (/^\/admin-dashboard\/edit-profile\/?$/.test(path)) {
+      return [
+        { label: 'Dashboard', link: ['/admin-dashboard', 'admin-dashboard-home'], plain: true },
+        { label: 'Edit Profile', link: null, plain: true },
+        { label: 'User Profile Management', link: null, plain: true },
+      ];
+    }
     return [];
+   
   });
 
   /** Finds a route param (e.g. `courseId`) anywhere in the activated route tree, falling back to the query string. */
@@ -191,9 +206,14 @@ export class AdminDashboard {
 
   // ---------- header: account dropdown ----------
   readonly accountMenuOpen = signal(false);
+  private readonly accountMenu = viewChild<ElementRef<HTMLElement>>('accountMenu');
 
-  @HostListener('document:click')
-  closeAccountMenu(): void {
+  @HostListener('document:click', ['$event'])
+  closeAccountMenu(event: MouseEvent): void {
+    if (!this.accountMenuOpen()) return;
+    const menu = this.accountMenu()?.nativeElement;
+    // Click inside the account wrapper (toggle button / menu items) is handled by its own handlers.
+    if (menu && event.composedPath().includes(menu)) return;
     this.accountMenuOpen.set(false);
   }
 
