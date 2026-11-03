@@ -179,7 +179,7 @@ export class AdminDashboard {
     }
 
 
-        // Edit Profile (/admin-dashboard/edit-profile)
+    // Edit Profile (/admin-dashboard/edit-profile)
     // Flow: Dashboard > Edit Profile > User Profile Management
     if (/^\/admin-dashboard\/edit-profile\/?$/.test(path)) {
       return [
@@ -188,8 +188,17 @@ export class AdminDashboard {
         { label: 'User Profile Management', link: null, plain: true },
       ];
     }
+
+    // NEW - Change Password (/admin-dashboard/change-password)
+    // Flow: Dashboard > Change Password
+    if (/^\/admin-dashboard\/change-password\/?$/.test(path)) {
+      return [
+        { label: 'Dashboard', link: ['/admin-dashboard', 'admin-dashboard-home'], plain: true },
+        { label: 'Change Password', link: null, plain: true },
+      ];
+    }
     return [];
-   
+
   });
 
   /** Finds a route param (e.g. `courseId`) anywhere in the activated route tree, falling back to the query string. */

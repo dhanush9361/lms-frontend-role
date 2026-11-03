@@ -68,7 +68,7 @@ export interface AdminListQuery {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  
+
   private readonly apiUrl = `${environment.apiBaseUrl}/api/auth`;
 
   private readonly tokenStorage = inject(TokenStorageService);
@@ -164,6 +164,19 @@ export class AuthService {
   resetPassword(token: string, newPassword: string, confirmPassword: string): Observable<unknown> {
     return this.http.post(`${this.apiUrl}/forgot-password/reset-password`, {
       token,
+      newPassword,
+      confirmPassword,
+    });
+  }
+
+  /** NEW - POST /api/auth/change-password (any logged-in user). */
+  changePassword(
+    currentPassword: string,
+    newPassword: string,
+    confirmPassword: string,
+  ): Observable<unknown> {
+    return this.http.post(`${this.apiUrl}/change-password`, {
+      currentPassword,
       newPassword,
       confirmPassword,
     });

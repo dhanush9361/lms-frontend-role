@@ -147,6 +147,14 @@ export const routes: Routes = [
   title: 'Edit Profile',
 },
 
+// NEW - Change Password (opens as a modal dialog on top of the dashboard)
+{
+  path: 'change-password',
+  loadComponent: () =>
+    import('./profile/change-password/change-password').then((m) => m.ChangePassword),
+  title: 'Change Password',
+},
+
     ],
   },
 

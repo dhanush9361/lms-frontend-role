@@ -134,6 +134,11 @@ export class PackagePermissionStep implements OnInit {
     const payload = this.draft.pendingPayload();
     if (!payload || this.submitting() || !this.featuresLoaded()) return;
 
+    if (!this.draft.hasAnyPermissionEnabled()) {
+    this.formError.set('Please select an item or feature');
+    return;
+  }
+
     const editingId = this.draft.editingPackageId();
     const body = { ...payload, permissions: this.draft.asPayloadPermissions() };
 

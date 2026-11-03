@@ -33,7 +33,7 @@
                     aria-hidden="true"
                   ></span>
                 </span>
-              } @else if (crumb.link) {
+              } @else if (crumb.link) {            
                 <!-- Clickable step -->
                 <a
                   [routerLink]="crumb.link"
@@ -180,6 +180,15 @@
       (click)="accountMenuOpen.set(false)"
     >
       Edit Profile
+    </a>
+    <!-- NEW - Change Password -->
+    <a
+      role="menuitem"
+      routerLink="/admin-dashboard/change-password"
+      class="block w-full px-4 py-2.5 text-left text-xs text-[#555] transition hover:bg-[#f6f6f6]"
+      (click)="accountMenuOpen.set(false)"
+    >
+      Change Password
     </a>
     <button
       type="button"
