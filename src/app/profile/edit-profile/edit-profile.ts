@@ -30,7 +30,8 @@ import { ProfileData, ProfileService, ProfileUpdate } from '../../services/profi
 /* -------------------------------------------------------------------------- */
 
 const LIMITS = {
-  name: 50,
+  firstName: 100,
+  lastName: 100,
   email: 100,
   organization: 500,
   phoneInput: 14,
@@ -39,6 +40,8 @@ const LIMITS = {
 const NAME_PATTERN = /^[A-Za-z]+$/;
 const MAX_PICTURE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_PICTURE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+const ALLOWED_PICTURE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 
 /** Roles that own an organization (see ProfileService.canEditOrganization on the backend). */
 const ORGANIZATION_ROLES: ReadonlySet<string> = new Set(['ADMIN', 'SUPER_ADMIN', 'INSTRUCTOR']);
@@ -114,8 +117,8 @@ const FIELD_LABELS: Readonly<Record<ProfileField, string>> = {
 };
 
 const MAX_LENGTHS: Readonly<Partial<Record<ProfileField, number>>> = {
-  firstName: LIMITS.name,
-  lastName: LIMITS.name,
+  firstName: LIMITS.firstName,
+  lastName: LIMITS.lastName,
   email: LIMITS.email,
   organizationName: LIMITS.organization,
   organizationAddress: 500,
@@ -180,12 +183,34 @@ export class EditProfile implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   /* ---- Template-facing constants ---- */
-  protected readonly limits = LIMITS;
-  protected readonly countryOptions = Object.keys(COUNTRIES);
-  protected readonly timeZones: string[] =
-    typeof Intl.supportedValuesOf === 'function'
-      ? Intl.supportedValuesOf('timeZone')
-      : ['Asia/Kolkata', 'UTC'];
+protected readonly limits = LIMITS;
+protected readonly countryOptions = Object.keys(COUNTRIES);
+protected readonly countrySearch = signal('');
+
+protected get filteredCountryOptions(): string[] {
+  const search = this.countrySearch().trim().toLowerCase();
+
+  return this.countryOptions.filter((country) =>
+    country.toLowerCase().includes(search)
+  );
+}
+
+protected readonly timeZones: string[] = [
+  'India',
+  ...(typeof Intl.supportedValuesOf === 'function'
+    ? Intl.supportedValuesOf('timeZone').filter(
+        (zone) => zone !== 'Asia/Kolkata'
+      )
+    : ['UTC']),
+];
+
+protected get filteredTimeZones(): string[] {
+  const search = this.timeZoneSearch().trim().toLowerCase();
+
+  return this.timeZones.filter((zone) =>
+    zone.replaceAll('_', ' ').toLowerCase().includes(search)
+  );
+}
   protected readonly countryCodeOptions = signal(Object.keys(PHONE_LENGTHS_BY_COUNTRY_CODE));
 
   /* ---- UI state ---- */
@@ -199,7 +224,9 @@ export class EditProfile implements OnInit {
   protected readonly backgroundPicturePreview = signal<string | null>(null);
   protected readonly initials = signal('?');
   /** Which custom dropdown (time zone / country / state / country code) is currently open. */
+  protected readonly timeZoneSearch = signal('');
   protected readonly openDropdown = signal<DropdownName | null>(null);
+
   /** Field -> message from the server (400 validation map / 409 email). Cleared when the field is edited. */
   private readonly serverErrors = signal<Partial<Record<ProfileField, string>>>({});
 
@@ -224,7 +251,7 @@ export class EditProfile implements OnInit {
       validators: [
         Validators.required,
         Validators.minLength(2),
-        Validators.maxLength(LIMITS.name),
+        Validators.maxLength(LIMITS.firstName),
         Validators.pattern(NAME_PATTERN),
       ],
     }),
@@ -232,7 +259,7 @@ export class EditProfile implements OnInit {
       nonNullable: true,
       validators: [
         Validators.required,
-        Validators.maxLength(LIMITS.name),
+        Validators.maxLength(LIMITS.lastName),
         Validators.pattern(NAME_PATTERN),
       ],
     }),
@@ -412,7 +439,7 @@ export class EditProfile implements OnInit {
     switch (field) {
       case 'firstName':
       case 'lastName':
-        if (errors['minlength']) return `${label} must be between 2 and ${LIMITS.name} characters.`;
+        if (errors['minlength']) return `${label} must be between 2 and ${MAX_LENGTHS[field]} characters.`;
         if (errors['pattern']) return `${label} must contain only letters.`;
         return '';
       case 'email':
@@ -446,7 +473,7 @@ export class EditProfile implements OnInit {
       organizationName: v.organizationName.trim(),
       organizationAddress: v.organizationAddress.trim(),
       personalAddress: v.personalAddress.trim(),
-      timeZone: v.timeZone,
+      timeZone: v.timeZone === 'India' ? 'Asia/Kolkata' : v.timeZone,
       country: v.country,
       state: v.state.trim(),
       city: v.city.trim(),
@@ -566,10 +593,17 @@ export class EditProfile implements OnInit {
     this.pictureError.set('');
     if (!file) return;
 
-    if (!ALLOWED_PICTURE_TYPES.includes(file.type)) {
-      this.pictureError.set('Only JPG, PNG or WEBP images are allowed.');
-      return;
-    }
+    const fileExtension = file.name
+  .substring(file.name.lastIndexOf('.'))
+  .toLowerCase();
+
+if (
+  !ALLOWED_PICTURE_TYPES.includes(file.type) ||
+  !ALLOWED_PICTURE_EXTENSIONS.includes(fileExtension)
+) {
+  this.pictureError.set('GIF images are not allowed. Only JPG, PNG or WEBP images are allowed.');
+  return;
+}
     if (file.size > MAX_PICTURE_BYTES) {
       this.pictureError.set('File size exceeds 5 MB.');
       return;

@@ -21,18 +21,22 @@
               formControlName="firstName"
               type="text"
               autocomplete="given-name"
-              maxlength="50"
+              maxlength="100"
               placeholder=" "
               required
               [attr.aria-invalid]="fieldError('firstName') ? 'true' : null"
               [attr.aria-describedby]="fieldError('firstName') ? 'firstName-error' : null"
-              class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
+              class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] pl-[18px] pr-16 text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
             />
             <label for="firstName" class="float-label">First Name<span class="text-[#e5484d]">*</span></label>
+            <span class="pointer-events-none absolute bottom-2 right-[18px] text-[11px] text-[#91979a]">
+  {{ form.controls.firstName.value.length }}/100
+</span>
           </div>
           @if (fieldError('firstName'); as error) {
             <span id="firstName-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
           }
+
         </div>
 
         <!-- Last Name -->
@@ -43,18 +47,23 @@
               formControlName="lastName"
               type="text"
               autocomplete="family-name"
-              maxlength="50"
+              maxlength="100"
               placeholder=" "
               required
               [attr.aria-invalid]="fieldError('lastName') ? 'true' : null"
               [attr.aria-describedby]="fieldError('lastName') ? 'lastName-error' : null"
-              class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
+              class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] pl-[18px] pr-16 text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
             />
             <label for="lastName" class="float-label">Last Name<span class="text-[#e5484d]">*</span></label>
+            <span class="pointer-events-none absolute bottom-2 right-[18px] text-[11px] text-[#91979a]">
+  {{ form.controls.lastName.value.length }}/100
+</span>
+            
           </div>
           @if (fieldError('lastName'); as error) {
             <span id="lastName-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
           }
+          
         </div>
 
         <!-- Email ID -->
@@ -94,10 +103,15 @@
                 class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
               />
               <label for="organizationName" class="float-label">Organization Name</label>
+              <span class="pointer-events-none absolute bottom-2 right-[18px] text-[11px] text-[#91979a]">
+  {{ form.controls.organizationName.value.length }}/500
+</span>
             </div>
             @if (fieldError('organizationName'); as error) {
+              
               <span id="organizationName-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
             }
+            
           </div>
         }
 
@@ -118,7 +132,15 @@
           </button>
           @if (openDropdown() === 'timeZone') {
             <div id="timeZone-options" class="absolute left-0 top-[calc(100%+4px)] z-50 max-h-52 w-full overflow-y-auto rounded-lg border border-neutral-100 bg-white py-1 shadow-xl" role="menu" aria-label="Time Zone">
-              @for (timeZone of timeZones; track timeZone) {
+              <input
+  type="text"
+  placeholder="Search time zone..."
+  [value]="timeZoneSearch()"
+  (input)="timeZoneSearch.set($any($event.target).value)"
+  (click)="$event.stopPropagation()"
+  class="mx-2 mb-2 w-[calc(100%-16px)] rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[#54b4c3]"
+/>
+             @for (timeZone of filteredTimeZones; track timeZone) {
                 <button
                   type="button"
                   role="menuitem"
@@ -146,7 +168,9 @@
                 class="peer block h-[74px] w-full resize-none rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] pb-6 pt-[14px] text-sm text-[#353a3d] outline-none focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
               ></textarea>
               <label for="organizationAddress" class="float-label float-label-area">OrganizationAddress</label>
-              <span class="pointer-events-none absolute bottom-2 right-[18px] text-[11px] text-[#91979a]">Maximum 500 characters</span>
+              <span class="pointer-events-none absolute bottom-2 right-[18px] text-[11px] text-[#91979a]">
+  {{ form.controls.organizationAddress.value.length }}/500
+</span>
             </div>
             @if (fieldError('organizationAddress'); as error) {
               <span id="organizationAddress-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
@@ -168,7 +192,9 @@
               class="peer block h-[74px] w-full resize-none rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] pb-6 pt-[14px] text-sm text-[#353a3d] outline-none focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"
             ></textarea>
             <label for="personalAddress" class="float-label float-label-area">Personal Address</label>
-            <span class="pointer-events-none absolute bottom-2 right-[18px] text-[11px] text-[#91979a]">Maximum 500 characters</span>
+            <span class="pointer-events-none absolute bottom-2 right-[18px] text-[11px] text-[#91979a]">
+  {{ form.controls.personalAddress.value.length }}/500
+</span>
           </div>
           @if (fieldError('personalAddress'); as error) {
             <span id="personalAddress-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
@@ -176,34 +202,57 @@
         </div>
 
         <!-- Country (custom dropdown) -->
-        <div class="relative col-span-1" (click)="$event.stopPropagation()">
-          <button
-            type="button"
-            id="country"
-            class="flex h-11 w-full cursor-pointer items-center justify-between gap-2 rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-left text-sm text-[#4a4f52] outline-none transition hover:bg-[#eeeeee] focus-visible:border-[#54b4c3] focus-visible:bg-white focus-visible:ring-[3px] focus-visible:ring-[#54b4c3]/20"
-            aria-label="Country"
-            aria-haspopup="menu"
-            aria-controls="country-options"
-            [attr.aria-expanded]="openDropdown() === 'country'"
-            (click)="toggleDropdown('country')"
-          >
-            <span class="min-w-0 flex-1 truncate">{{ form.controls.country.value || 'Country' }}</span>
-            <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0 fill-none stroke-[#777] transition-transform duration-200" [class.rotate-180]="openDropdown() === 'country'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
-          </button>
-          @if (openDropdown() === 'country') {
-            <div id="country-options" class="absolute bottom-[calc(100%+4px)] left-0 z-50 max-h-52 w-full min-w-44 overflow-y-auto rounded-lg border border-neutral-100 bg-white py-1 shadow-xl" role="menu" aria-label="Country">
-              @for (country of countryOptions; track country) {
-                <button
-                  type="button"
-                  role="menuitem"
-                  class="block min-h-9 w-full cursor-pointer px-3 text-left text-[13px] text-[#4a4f52] outline-none hover:bg-[#f6f6f6] focus-visible:bg-[#eef8fa]"
-                  [class.font-semibold]="form.controls.country.value === country"
-                  (click)="chooseOption('country', country)"
-                >{{ country }}</button>
-              }
-            </div>
-          }
-        </div>
+        
+<!-- Country (custom dropdown) -->
+<div class="relative col-span-1" (click)="$event.stopPropagation()">
+  <button
+    type="button"
+    id="country"
+    class="flex h-11 w-full cursor-pointer items-center justify-between gap-2 rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-left text-sm text-[#4a4f52] outline-none transition hover:bg-[#eeeeee] focus-visible:border-[#54b4c3] focus-visible:bg-white focus-visible:ring-[3px] focus-visible:ring-[#54b4c3]/20"
+    aria-label="Country"
+    aria-haspopup="menu"
+    aria-controls="country-options"
+    [attr.aria-expanded]="openDropdown() === 'country'"
+    (click)="toggleDropdown('country')"
+  >
+    <span class="min-w-0 flex-1 truncate">
+      {{ form.controls.country.value || 'Country' }}
+    </span>
+    <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0 fill-none stroke-[#777] transition-transform duration-200" [class.rotate-180]="openDropdown() === 'country'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  </button>
+
+  @if (openDropdown() === 'country') {
+    <div
+      id="country-options"
+      class="absolute bottom-[calc(100%+4px)] left-0 z-50 max-h-52 w-full min-w-44 overflow-y-auto rounded-lg border border-neutral-100 bg-white py-1 shadow-xl"
+      role="menu"
+      aria-label="Country"
+    >
+      <input
+        type="text"
+        placeholder="Search country..."
+        [value]="countrySearch()"
+        (input)="countrySearch.set($any($event.target).value)"
+        (click)="$event.stopPropagation()"
+        class="mx-2 mb-2 w-[calc(100%-16px)] rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[#54b4c3]"
+      />
+
+      @for (country of filteredCountryOptions; track country) {
+        <button
+          type="button"
+          role="menuitem"
+          class="block min-h-9 w-full cursor-pointer px-3 text-left text-[13px] text-[#4a4f52] outline-none hover:bg-[#f6f6f6] focus-visible:bg-[#eef8fa]"
+          [class.font-semibold]="form.controls.country.value === country"
+          (click)="chooseOption('country', country)"
+        >
+          {{ country }}
+        </button>
+      }
+    </div>
+  }
+</div>
 
         <!-- State (dropdown when the country has a state list, text box otherwise) -->
         @if (stateOptions().length) {
