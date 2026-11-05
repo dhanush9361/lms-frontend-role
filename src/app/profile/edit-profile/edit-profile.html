@@ -213,6 +213,8 @@
     aria-haspopup="menu"
     aria-controls="country-options"
     [attr.aria-expanded]="openDropdown() === 'country'"
+    [attr.aria-invalid]="fieldError('country') ? 'true' : null"
+    [attr.aria-describedby]="fieldError('country') ? 'country-error' : null"
     (click)="toggleDropdown('country')"
   >
     <span class="min-w-0 flex-1 truncate">
@@ -252,6 +254,9 @@
       }
     </div>
   }
+  @if (fieldError('country'); as error) {
+    <span id="country-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+  }
 </div>
 
         <!-- State (dropdown when the country has a state list, text box otherwise) -->
@@ -265,6 +270,8 @@
               aria-haspopup="menu"
               aria-controls="state-options"
               [attr.aria-expanded]="openDropdown() === 'state'"
+              [attr.aria-invalid]="fieldError('state') ? 'true' : null"
+              [attr.aria-describedby]="fieldError('state') ? 'state-error' : null"
               (click)="toggleDropdown('state')"
             >
               <span class="min-w-0 flex-1 truncate">{{ form.controls.state.value || 'State' }}</span>
@@ -283,6 +290,9 @@
                 }
               </div>
             }
+            @if (fieldError('state'); as error) {
+              <span id="state-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+            }
           </div>
         } @else {
           <div class="relative col-span-1">
@@ -292,9 +302,14 @@
               type="text"
               autocomplete="address-level1"
               placeholder=" "
+              [attr.aria-invalid]="fieldError('state') ? 'true' : null"
+              [attr.aria-describedby]="fieldError('state') ? 'state-error' : null"
               class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20"
             />
             <label for="state" class="float-label">State</label>
+            @if (fieldError('state'); as error) {
+              <span id="state-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+            }
           </div>
         }
 
@@ -306,9 +321,14 @@
             type="text"
             autocomplete="address-level2"
             placeholder=" "
+            [attr.aria-invalid]="fieldError('city') ? 'true' : null"
+            [attr.aria-describedby]="fieldError('city') ? 'city-error' : null"
             class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20"
           />
           <label for="city" class="float-label">City</label>
+          @if (fieldError('city'); as error) {
+            <span id="city-error" class="mt-1 block text-[11px] font-medium text-[#a3211a]" role="alert">{{ error }}</span>
+          }
         </div>
 
         <!-- Postal Code -->
@@ -318,9 +338,11 @@
               id="postalCode"
               formControlName="postalCode"
               type="text"
+              inputmode="numeric"
               autocomplete="postal-code"
-              maxlength="20"
+              maxlength="9"
               placeholder=" "
+              (input)="onPostalCodeInput($event)"
               [attr.aria-invalid]="fieldError('postalCode') ? 'true' : null"
               [attr.aria-describedby]="fieldError('postalCode') ? 'postalCode-error' : null"
               class="peer h-11 w-full rounded-[14px] border border-transparent bg-[#f4f4f4] px-[18px] text-sm text-[#353a3d] outline-none transition-all focus:border-[#54b4c3] focus:bg-white focus:ring-[3px] focus:ring-[#54b4c3]/20 aria-[invalid=true]:border-[#b42318]"

@@ -8,9 +8,11 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
 
 const PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_MAX_LENGTH = 16;
+const PASSWORD_MAX_LENGTH = 20;
 const STRONG_PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 const EMOJI_PATTERN = /[\p{Extended_Pictographic}\p{Regional_Indicator}]/u;
+const noWhitespaceValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null =>
+  /\s/.test(control.value) ? { whitespaceNotAllowed: true } : null;
 
 const HOME_ROUTE_BY_ROLE: Readonly<Record<string, string>> = {
   SUPER_ADMIN: '/super-admin-dashboard/package',
@@ -65,6 +67,7 @@ export class ChangePassword implements AfterViewInit {
           Validators.required,
           Validators.minLength(PASSWORD_MIN_LENGTH),
           Validators.maxLength(PASSWORD_MAX_LENGTH),
+          noWhitespaceValidator,
           Validators.pattern(STRONG_PASSWORD_PATTERN),
           (control: AbstractControl): ValidationErrors | null =>
             EMOJI_PATTERN.test(control.value) ? { emojiNotAllowed: true } : null,
