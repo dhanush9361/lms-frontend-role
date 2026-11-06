@@ -14,6 +14,12 @@ export const routes: Routes = [
       import('./auth/login-signup/login-signup').then((m) => m.LoginSignup),
     title: 'Sign Up / Login',
   },
+  {
+  path: 'about-us',
+  loadComponent: () =>
+    import('./home/about-us/about-us').then((m) => m.AboutUs),
+  title: 'About Us',
+},
 
   {
     path: 'reset-password/:token',
