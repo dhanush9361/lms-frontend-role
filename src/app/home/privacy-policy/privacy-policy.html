@@ -1,0 +1,137 @@
+
+<div class="min-h-screen w-full overflow-hidden rounded-[24px] bg-white font-sans text-[#555555]">
+
+  <!-- HEADER -->
+  <header class="flex min-h-[105px] w-full items-center justify-between gap-4 bg-white px-6 py-5 md:px-10 lg:px-12">
+
+    <!-- LOGO -->
+    <a routerLink="/" class="flex shrink-0 items-center">
+      <img
+        src="/imgcomponent/trans%20logo%201.png"
+        alt="VativaHub Logo"
+        class="h-12 w-auto object-contain"
+      />
+    </a>
+
+    <!-- NAVIGATION -->
+    <nav class="hidden items-center gap-8 rounded-full bg-[#f5f5f5] px-9 py-4 text-sm text-[#777777] md:flex">
+      <a routerLink="/" class="transition hover:text-[#5d75e8]">Home</a>
+      <a routerLink="/about-us" class="transition hover:text-[#5d75e8]">About Us</a>
+      <a routerLink="/our-service" class="transition hover:text-[#5d75e8]">Our Service</a>
+      <a routerLink="/plans" class="transition hover:text-[#5d75e8]">Plans</a>
+      <a routerLink="/contact-us" class="transition hover:text-[#5d75e8]">Contact Us</a>
+    </nav>
+
+    <!-- CONTACT BUTTON -->
+    <a
+      href="mailto:info@vativahub.com"
+      class="hidden rounded-full bg-[#5d75e8] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#4962d5] md:inline-block"
+    >
+      Ready For Your Queries
+    </a>
+
+  </header>
+
+  <!-- BANNER -->
+  <section class="relative flex min-h-[187px] items-center overflow-visible bg-[#7889e8] px-8 md:min-h-[187px] md:px-10 lg:px-[7%]">
+
+    <h1 class="relative z-10 max-w-[450px] text-4xl font-bold leading-tight text-white md:text-5xl lg:text-[48px]">
+      Privacy And<br class="hidden sm:block" /> Policy
+    </h1>
+
+    <!-- PRIVACY ILLUSTRATION -->
+    <img
+     src="/imgcomponent/privacy-policy/rafiki.png"
+      alt="Privacy Policy Illustration"
+      class="absolute -bottom-[120px] right-[4%] z-20 block h-[250px] w-[270px] object-contain sm:h-[280px] sm:w-[310px] md:-bottom-[125px] md:right-[5%] md:h-[320px] md:w-[350px] lg:h-[340px] lg:w-[380px]"
+    />
+
+  </section>
+
+  <!-- PRIVACY CONTENT -->
+  <main class="mx-auto w-full max-w-[1440px] px-7 pb-10 pt-10 md:px-12 lg:px-[6%]">
+
+    <p class="mb-5 max-w-[850px] text-[13px] leading-[29px] text-[#555555] md:text-[13px]">
+      At Vativa Designs and Development, we value your privacy and are committed to protecting your personal and project-related information.
+    </p>
+
+    <div class="space-y-2">
+      <section *ngFor="let section of sections">
+
+        <h2 class="mb-2 text-[13px] font-semibold text-[#7185e8]">
+          {{ section.heading }}
+        </h2>
+
+        <ul class="list-disc space-y-2 pl-[18px] text-[12px] leading-[23px] text-[#555555] md:text-[13px]">
+          <li *ngFor="let point of section.points">
+            {{ point }}
+          </li>
+        </ul>
+
+      </section>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="w-full bg-[#f5f5f5] px-5 py-7 text-center">
+
+    <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 text-[14px] text-[#999999] md:text-[16px]">
+
+      <a
+        routerLink="/terms-and-conditions"
+        class="transition hover:text-[#5d75e8]"
+      >
+        Terms &amp; Conditions
+      </a>
+
+      <a
+        routerLink="/privacy-policy"
+        class="transition hover:text-[#5d75e8]"
+      >
+        Privacy Policy
+      </a>
+
+      <a
+        routerLink="/refund-cancellation"
+        class="transition hover:text-[#5d75e8]"
+      >
+        Refund &amp; Cancellation
+      </a>
+
+      <a
+        routerLink="/plan-policy"
+        class="transition hover:text-[#5d75e8]"
+      >
+        Plan Policy
+      </a>
+
+    </div>
+
+    <!-- SOCIAL LINKS -->
+    <div class="mt-6 flex items-center justify-center gap-4 text-[#999999]">
+
+      <span class="mr-1 text-[11px]">We are always in connect with</span>
+
+      <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+        <span class="text-lg font-bold">f</span>
+      </a>
+
+      <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <span class="text-lg font-bold">in</span>
+      </a>
+
+      <a href="https://www.whatsapp.com/" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+        <span class="text-lg font-bold">◉</span>
+      </a>
+
+    </div>
+
+    <!-- COPYRIGHT -->
+    <p class="mt-6 text-[11px] text-[#999999]">
+      VativaHub&nbsp;&nbsp; 2026
+    </p>
+
+  </footer>
+
+</div>

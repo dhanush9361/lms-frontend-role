@@ -20,6 +20,54 @@ export const routes: Routes = [
     import('./home/about-us/about-us').then((m) => m.AboutUs),
   title: 'About Us',
 },
+{
+  path: 'contact-us',
+  loadComponent: () =>
+   import('./home/contact-us/contact-us').then(
+      (m) => m.ContactUs
+    ),
+  title: 'Contact Us',
+},
+{
+  path: 'plans',
+  loadComponent: () =>
+    import('./home/plans/plans').then((m) => m.Plans),
+  title: 'Plans',
+},
+{
+  path: 'terms-and-conditions',
+  loadComponent: () =>
+    import('./home/terms-and-conditions/terms-and-conditions')
+      .then((m) => m.TermsAndConditions),
+  title: 'Terms & Conditions',
+},
+
+
+{
+  path: 'privacy-policy',
+  loadComponent: () =>
+    import('./home/privacy-policy/privacy-policy')
+      .then((m) => m.PrivacyPolicy),
+  title: 'Privacy Policy',
+},
+
+{
+  path: 'refund-cancellation',
+  loadComponent: () =>
+    import('./home/refund-cancellation/refund-cancellation')
+      .then((m) => m.RefundCancellation),
+  title: 'Refund & Cancellation Policy',
+},
+
+
+{
+  path: 'plan-policy',
+  loadComponent: () =>
+    import('./home/plan-policy/plan-policy')
+      .then((m) => m.PlanPolicy),
+  title: 'Pricing Policy',
+},
+
 
   {
     path: 'reset-password/:token',

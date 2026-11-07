@@ -24,16 +24,23 @@
       <a href="#our-approach" class="rounded-full px-2 py-1 transition-colors hover:text-[#5d78e4]"
         >Our Service</a
       >
-      <a href="#team" class="rounded-full px-2 py-1 transition-colors hover:text-[#5d78e4]"
-        >Plans</a
-      >
-      <a href="#footer" class="rounded-full px-2 py-1 transition-colors hover:text-[#5d78e4]"
-        >Contact Us</a
-      >
+     <a
+  href="#"
+  (click)="navigateTo('/plans'); $event.preventDefault()"
+  class="rounded-full px-2 py-1 transition-colors hover:text-[#5d78e4]"
+  >Plans</a
+>
+     <a
+  href="#"
+  (click)="navigateTo('/contact-us'); $event.preventDefault()"
+  class="rounded-full px-2 py-1 transition-colors hover:text-[#5d78e4]"
+  >Contact Us</a
+>
     </nav>
 
     <a
-      href="#footer"
+      href="#"
+(click)="navigateTo('/contact-us'); $event.preventDefault()"
       class="rounded-full bg-[#5b75e3] px-4 py-2 text-[10px] text-white shadow-sm transition-colors hover:bg-[#4d67d6]"
     >
       Ready For Your Queries
@@ -516,10 +523,26 @@
       aria-label="Footer navigation"
       class="mx-auto flex max-w-[560px] flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[10px]"
     >
-      <a href="#footer" class="transition-colors hover:text-[#5e78e2]">Term &amp; Conditions</a>
-      <a href="#footer" class="transition-colors hover:text-[#5e78e2]">Privacy Policy</a>
-      <a href="#footer" class="transition-colors hover:text-[#5e78e2]">Refund &amp; Cancellation</a>
-      <a href="#footer" class="transition-colors hover:text-[#5e78e2]">Plan Policy</a>
+      <a
+  href="#"
+  (click)="navigateTo('/terms-and-conditions'); $event.preventDefault()"
+  class="transition-colors hover:text-[#5e78e2]"
+>Term &amp; Conditions</a>
+     <a
+  href="#"
+  (click)="navigateTo('/privacy-policy'); $event.preventDefault()"
+  class="transition-colors hover:text-[#5e78e2]"
+>Privacy Policy</a>
+     <a
+  href="#"
+  (click)="navigateTo('/refund-cancellation'); $event.preventDefault()"
+  class="transition-colors hover:text-[#5e78e2]"
+>Refund &amp; Cancellation</a>
+      <a
+  href="#"
+  (click)="navigateTo('/plan-policy'); $event.preventDefault()"
+  class="transition-colors hover:text-[#5e78e2]"
+>Plan Policy</a>
     </nav>
     <div class="mt-3 flex items-center justify-center gap-2 text-[8px]">
       <span>We are always in connect with</span>

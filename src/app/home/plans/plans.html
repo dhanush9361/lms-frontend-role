@@ -1,0 +1,198 @@
+
+<main class="min-h-screen w-full overflow-hidden rounded-[24px] bg-white font-sans text-[#555555]">
+
+  <!-- HEADER -->
+  <header class="flex min-h-[88px] w-full items-center justify-between gap-4 px-[3.4%] py-4">
+
+    <!-- LOGO -->
+    <a href="/" class="flex shrink-0 items-center">
+      <img
+        src="/imgcomponent/trans%20logo%201.png"
+        alt="VativaHub Logo"
+        class="h-14 w-20 object-contain"
+      />
+    </a>
+
+    <!-- NAVIGATION -->
+    <nav class="hidden items-center gap-10 rounded-full bg-[#f5f5f5] px-10 py-[17px] lg:flex">
+      <a href="/" class="text-[14px] text-[#888888] transition hover:text-[#6077e8]">Home</a>
+
+      <a href="/about-us" class="text-[14px] text-[#888888] transition hover:text-[#6077e8]">About Us</a>
+
+      <a href="/our-service" class="text-[14px] text-[#888888] transition hover:text-[#6077e8]">Our Service</a>
+
+      <a href="/plans" class="text-[14px] font-medium text-[#6077e8]">Plans</a>
+
+      <a href="/contact-us" class="text-[14px] text-[#888888] transition hover:text-[#6077e8]">Contact Us</a>
+    </nav>
+
+    <!-- CONTACT BUTTON -->
+    <a
+      href="mailto:info@vativahub.com"
+      class="hidden rounded-full bg-[#5e75e5] px-6 py-[15px] text-[14px] font-medium text-white transition hover:bg-[#4d65d0] md:block"
+    >
+      Ready For Your Queries
+    </a>
+
+  </header>
+
+  <!-- PAGE CONTENT -->
+  <section class="mx-auto w-full max-w-[1600px] px-[3.4%] pb-16 pt-7">
+
+    <!-- TITLE -->
+    <h1 class="text-center text-[36px] font-bold leading-tight text-[#7185e8] sm:text-[46px] md:text-[54px] lg:text-[56px]">
+      Choose Your Perfect Plan
+    </h1>
+
+    <!-- MONTHLY / YEARLY TOGGLE -->
+    <div class="mt-9 flex justify-center">
+
+      <div class="flex items-center rounded-full bg-[#f5f5f5] p-1">
+
+        <button
+          type="button"
+          (click)="selectBilling('monthly')"
+          [ngClass]="selectedBilling === 'monthly'
+            ? 'bg-[#7185e8] text-white'
+            : 'bg-transparent text-[#7185e8]'"
+          class="min-w-[150px] rounded-full px-8 py-[14px] text-[16px] font-medium transition-all duration-300"
+        >
+          Monthly
+        </button>
+
+        <button
+          type="button"
+          (click)="selectBilling('yearly')"
+          [ngClass]="selectedBilling === 'yearly'
+            ? 'bg-[#7185e8] text-white'
+            : 'bg-transparent text-[#7185e8]'"
+          class="min-w-[150px] rounded-full px-8 py-[14px] text-[16px] font-medium transition-all duration-300"
+        >
+          Yearly
+        </button>
+
+      </div>
+
+    </div>
+
+    @if (loading) {
+  <p class="mt-8 text-center text-[#7185e8]">
+    Loading plans...
+  </p>
+}
+
+@if (errorMessage) {
+  <p class="mt-8 text-center text-red-500">
+    {{ errorMessage }}
+  </p>
+}
+
+@if (!loading && !errorMessage && plans.length === 0) {
+  <p class="mt-8 text-center text-[#7185e8]">
+    No plans available for this billing cycle.
+  </p>
+}
+
+  
+<!-- PLAN CARDS -->
+@if (!loading && !errorMessage && plans.length > 0) {
+  <div class="mt-8 grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3 xl:gap-7">
+
+    @for (plan of plans; track plan.id) {
+      <article
+        [ngClass]="plan.highlighted
+          ? 'bg-[#7185e8] text-white'
+          : 'bg-[#f6f6f6] text-[#555555]'"
+        class="flex min-h-[590px] flex-col rounded-[28px] px-8 pb-5 pt-9 transition-all duration-300 sm:px-10"
+      >
+        <h2
+          [ngClass]="plan.highlighted ? 'text-white' : 'text-[#7185e8]'"
+          class="text-center text-[24px] font-semibold sm:text-[26px]"
+        >
+          {{ plan.name }}
+        </h2>
+
+        <p class="mt-2 text-center text-[52px] font-bold leading-tight sm:text-[56px]">
+          ${{ plan.price }}
+        </p>
+
+        <p
+          [ngClass]="plan.highlighted ? 'text-white' : 'text-[#7185e8]'"
+          class="mt-1 min-h-[25px] text-center text-[12px]"
+        >
+          {{ plan.description }}
+        </p>
+
+        <div class="mt-7 max-h-[290px] min-h-[260px] flex-1 space-y-4 overflow-y-auto pr-2">
+          @for (feature of plan.features; track feature) {
+            <div class="flex items-start gap-3">
+              <span
+                [ngClass]="plan.highlighted ? 'bg-white' : 'bg-[#555555]'"
+                class="mt-[3px] flex h-[13px] w-[13px] shrink-0 items-center justify-center rounded-full"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  [ngClass]="plan.highlighted ? 'text-[#7185e8]' : 'text-white'"
+                  class="h-[9px] w-[9px]"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                >
+                  <path d="m5 12 4 4L19 6" />
+                </svg>
+              </span>
+
+              <p class="text-[14px] leading-[1.7]">
+                {{ feature }}
+              </p>
+            </div>
+          }
+        </div>
+
+        <button
+          type="button"
+          (click)="buyPlan(plan)"
+          class="mt-5 min-h-[42px] w-full rounded-full bg-white px-6 text-[12px] font-medium text-[#7185e8] transition hover:bg-[#eeeeee] sm:mx-auto sm:w-[145px]"
+        >
+          Buy Plan
+        </button>
+      </article>
+    }
+  </div>
+}
+
+
+    <!-- SELECTED PLAN MESSAGE -->
+    @if (selectedPlan) {
+
+      <p
+        class="mt-5 text-center text-sm font-medium text-[#7185e8]"
+        aria-live="polite"
+      >
+        {{ selectedPlan }} selected.
+      </p>
+
+    }
+
+
+    <!-- ANNUAL SUBSCRIPTION / QR -->
+    <div class="mt-16 flex flex-col items-center text-center">
+
+      <h2 class="text-[19px] font-bold text-[#7185e8] sm:text-[21px] md:text-[23px]">
+        Make Your Payments Easier With An Annual Subscription
+      </h2>
+
+      <img
+  src="/imgcomponent/plans/QR%201.png"
+  alt="Annual subscription payment QR code"
+  class="mt-7 h-[155px] w-[155px] object-contain"
+/>
+
+    </div>
+
+  </section>
+
+  <!-- BOTTOM BACKGROUND -->
+  <div class="h-5 w-full bg-gradient-to-r from-white via-[#e4e8ff] to-white"></div>
+
+</main>

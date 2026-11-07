@@ -1,0 +1,122 @@
+<div class="min-h-screen w-full overflow-hidden bg-white">
+
+  <!-- Header -->
+  <header class="flex min-h-[105px] w-full items-center justify-between bg-white px-6 py-5 md:px-10 lg:px-12">
+
+    <!-- Logo -->
+    <a routerLink="/" class="flex shrink-0 items-center">
+      <img
+        src="/imgcomponent/trans%20logo%201.png"
+        alt="VativaHub Logo"
+        class="h-12 w-auto object-contain"
+      />
+    </a>
+
+    <!-- Navigation -->
+    <nav class="hidden items-center gap-8 rounded-full bg-[#f5f5f5] px-9 py-4 text-sm text-[#777777] md:flex">
+      <a routerLink="/" class="transition hover:text-[#5d75e8]">Home</a>
+      <a routerLink="/about-us" class="transition hover:text-[#5d75e8]">About Us</a>
+      <a routerLink="/our-service" class="transition hover:text-[#5d75e8]">Our Service</a>
+      <a routerLink="/plans" class="transition hover:text-[#5d75e8]">Plans</a>
+      <a routerLink="/contact-us" class="transition hover:text-[#5d75e8]">Contact Us</a>
+    </nav>
+
+    <!-- Contact Button -->
+    <a
+      routerLink="/contact-us"
+      class="hidden rounded-full bg-[#5d75e8] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#4962d5] md:inline-block"
+    >
+      Ready For Your Queries
+    </a>
+
+  </header>
+
+  <!-- Banner -->
+  <section class="relative flex min-h-[205px] items-center overflow-visible bg-[#7889e8] px-8 md:min-h-[207px] md:px-10 lg:px-9">
+
+    <h1 class="relative z-10 text-4xl font-bold text-white md:text-5xl lg:text-[52px]">
+      Terms &amp; Conditions
+    </h1>
+
+    <!-- Illustration -->
+ <img
+  src="/imgcomponent/accept-terms/rafiki.png"
+  alt="Terms and Conditions Illustration"
+  class="absolute bottom-[-50px] right-[4%] z-20 block h-[220px] w-[250px] object-contain sm:h-[260px] sm:w-[290px] md:h-[290px] md:w-[340px] lg:right-[5%] lg:h-[315px] lg:w-[380px]"
+/>
+  </section>
+
+  <!-- Terms Content -->
+  <main class="mx-auto w-full max-w-[1440px] px-7 pb-12 pt-10 md:px-12 lg:px-[54px]">
+
+    <p class="mb-6 text-[13px] leading-[30px] text-[#555555] md:text-[14px]">
+      Welcome to Vativa Designs and Development. By accessing or using our website and services, you agree to comply with and be bound by the following terms and conditions. Our services are designed to support e-learning content development, LMS implementation, and digital training solutions, and you agree to use them only for lawful purposes and in a manner that does not infringe on the rights of others.
+    </p>
+
+    <ul class="list-disc space-y-6 pl-4 text-[13px] leading-[25px] text-[#555555] md:space-y-6 md:text-[14px] md:leading-[27px]">
+      <li *ngFor="let term of terms">
+        {{ term }}
+      </li>
+    </ul>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full bg-[#f5f5f5] px-5 py-7 text-center">
+
+    <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 text-[14px] text-[#999999] md:text-[16px]">
+
+   <a
+  routerLink="/terms-and-conditions"
+  class="text-[#999999] transition hover:text-[#5d75e8]"
+>
+  Terms &amp; Conditions
+</a>
+      <a
+        routerLink="/privacy-policy"
+        class="text-[#999999] transition hover:text-[#5d75e8]"
+      >
+        Privacy Policy
+      </a>
+
+      <a
+        routerLink="/refund-cancellation"
+        class="text-[#999999] transition hover:text-[#5d75e8]"
+      >
+        Refund &amp; Cancellation
+      </a>
+
+      <a
+        routerLink="/plan-policy"
+        class="text-[#999999] transition hover:text-[#5d75e8]"
+      >
+        Plan Policy
+      </a>
+
+    </div>
+
+    <!-- Social Links -->
+    <div class="mt-6 flex items-center justify-center gap-4 text-[#999999]">
+      <span class="mr-1 text-[11px]">We are always in connect with</span>
+
+      <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+        <span class="text-lg font-bold">f</span>
+      </a>
+
+      <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <span class="text-lg font-bold">in</span>
+      </a>
+
+      <a href="https://www.whatsapp.com/" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+        <span class="text-lg font-bold">◉</span>
+      </a>
+    </div>
+
+    <!-- Copyright -->
+    <p class="mt-6 text-[11px] text-[#999999]">
+      VativaHub&nbsp;&nbsp; 2026
+    </p>
+
+  </footer>
+
+</div>

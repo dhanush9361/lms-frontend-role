@@ -1,6 +1,6 @@
 import { NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-
+import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
+import { Router } from '@angular/router';
 type SocialNetwork = {
   name: 'Facebook' | 'LinkedIn' | 'Instagram';
   url: string | null;
@@ -23,6 +23,12 @@ type TeamMember = {
   },
 })
 export class AboutUs {
+  private router = inject(Router);
+  navigateTo(path: string): void {
+  this.router.navigate([path], {
+    skipLocationChange: true
+  });
+}
   readonly openSocialMenu = signal<number | null>(null);
 
   readonly team: TeamMember[] = [
