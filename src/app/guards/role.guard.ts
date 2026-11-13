@@ -38,7 +38,9 @@ export const roleGuard =
 
     const user = auth.user();
     if (!user) return router.createUrlTree(['/auth']);
-    if (allowedRoles.includes(user.role)) return true;
+    if (allowedRoles.some(role =>
+  role.toUpperCase() === user.role?.trim().toUpperCase()
+)) return true;
 
     return router.createUrlTree([homeRouteFor(user)]);
   };

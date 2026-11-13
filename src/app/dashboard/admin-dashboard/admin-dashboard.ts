@@ -65,6 +65,9 @@ export class AdminDashboard {
   // back to email) - kept DRY instead of re-deriving it here.
   readonly displayName = this.auth.displayName;
   readonly roleLabel = computed(() => this.auth.user()?.role ?? '');
+  readonly isLearner = computed(() =>
+  this.auth.user()?.role?.toUpperCase() === 'LEARNER'
+);
 
   /** Short form for the header bar itself (limited width) - falls back to the
    *  full display name (e.g. the email) when firstName isn't available. */

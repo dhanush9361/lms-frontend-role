@@ -1,0 +1,121 @@
+
+<!-- My Certificate - Existing Dashboard Content Area -->
+
+<div class="w-full h-full min-w-0 px-5 pt-0 pb-6 sm:px-8">
+
+
+  <!-- Page Heading -->
+  <div class="mb-0 grid grid-cols-[10px_minmax(0,1fr)] items-start gap-4">
+
+    <!-- Back Button -->
+    <button
+      type="button"
+      (click)="goBack()"
+      class="-ml-20 mt-1 flex items-center gap- text-[15px] font-normal text-[#555555] transition hover:text-[#65bdcb]"
+    >
+      <span class="text-[22px] leading-none">‹</span>
+      Back
+    </button>
+
+    <!-- Title -->
+    <div>
+      <h1 class="text-[24px] font-semibold leading-[30px] text-[#555555]">
+        My Certificate
+      </h1>
+
+      <p class="mt-5 text-[16px] font-normal leading-6 text-[#555555]">
+        Download your certificates which you have earned
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Certificate Table -->
+  <div class="ml-0 rounded-[18px] bg-[#f5f5f5] p-5">
+
+    <!-- Fixed Table Header -->
+    <div class="mb-4 grid grid-cols-[1.2fr_2.8fr_0.6fr_0.8fr] items-center rounded-[17px] bg-white px-7 py-5 text-[16px] font-normal text-[#555555]">
+
+      <div>Course Name</div>
+
+      <div>Issue date</div>
+
+      <div class="text-center">Preview</div>
+
+      <div class="text-center">Download Certificate</div>
+
+    </div>
+
+    <!-- Scrollable Rows Only -->
+    <div class="max-h-[calc(100vh-275px)] min-h-[200px] overflow-y-auto rounded-[17px] bg-white px-7">
+
+      @for (certificate of certificates; track certificate.id) {
+
+        <div class="grid min-h-[71px] grid-cols-[1.2fr_2.8fr_0.6fr_0.8fr] items-center text-[16px] font-normal text-[#555555]">
+
+          <!-- Course Name -->
+          <div class="pr-2">
+            {{ certificate.courseName }}
+          </div>
+
+          <!-- Issue Date -->
+          <div>
+            {{ certificate.issueDate }}
+          </div>
+
+          <!-- Preview -->
+          <div class="flex justify-center">
+            <button
+              type="button"
+              (click)="previewCertificate(certificate)"
+              title="Preview Certificate"
+              class="flex h-9 w-9 items-center justify-center text-[#65bdcb] transition hover:scale-110"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="h-[27px] w-[27px]"
+              >
+                <path d="M12 5c-5.5 0-9.5 5.1-10.8 6.5a.8.8 0 0 0 0 1C2.5 13.9 6.5 19 12 19s9.5-5.1 10.8-6.5a.8.8 0 0 0 0-1C21.5 10.1 17.5 5 12 5Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Z"/>
+                <circle cx="12" cy="12" r="2.2"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Download -->
+          <div class="flex justify-center">
+            <a
+              [href]="certificate.downloadUrl"
+              [attr.download]="certificate.fileName"
+              title="Download Certificate"
+              class="flex h-9 w-9 items-center justify-center text-[#65bdcb] transition hover:scale-110"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="h-[26px] w-[26px]"
+              >
+                <path d="M12 2.5a1 1 0 0 1 1 1v9.1l2.2-2.2a1 1 0 1 1 1.4 1.4l-3.9 3.9a1 1 0 0 1-1.4 0l-3.9-3.9a1 1 0 1 1 1.4-1.4l2.2 2.2V3.5a1 1 0 0 1 1-1Z"/>
+                <path d="M4 15.5a1 1 0 0 1 1 1v3h14v-3a1 1 0 1 1 2 0v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1Z"/>
+              </svg>
+            </a>
+          </div>
+
+        </div>
+
+      }
+
+      <!-- Empty State -->
+      @if (certificates.length === 0) {
+        <div class="py-12 text-center text-sm text-[#888888]">
+          No certificates available.
+        </div>
+      }
+
+    </div>
+
+  </div>
+
+</div>

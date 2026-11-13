@@ -217,6 +217,17 @@ export const routes: Routes = [
   title: 'Change Password',
 },
 
+
+
+{
+  path: 'my-certificate',
+  canActivate: [roleGuard('LEARNER')],
+  loadComponent: () =>
+    import('./profile/my-certificate/my-certificate').then(
+      (m) => m.MyCertificateComponent
+    ),
+  title: 'My Certificate',
+},
     ],
   },
 

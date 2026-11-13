@@ -1,0 +1,140 @@
+
+<div class="min-h-screen bg-[#f5f5f5] p-5 md:p-8">
+
+ <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-semibold text-gray-700">
+      Certificate Of Completion
+    </h1>
+
+    <p class="mt-2 text-sm text-gray-500">
+      Successfully completed the training program
+    </p>
+  </div>
+
+  <button
+    type="button"
+    class="rounded-xl bg-white px-10 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-100">
+    Preview
+  </button>
+</div>
+
+  <!-- Main Container -->
+  <div class="rounded-3xl bg-white p-5 md:p-8">
+
+    <!-- Top Certificate Images -->
+    <div class="mb-7 flex gap-5 overflow-x-auto pb-2">
+
+      <button
+        *ngFor="let image of certificateImages"
+        type="button"
+        (click)="selectImage(image)"
+        class="h-24 min-w-[180px] overflow-hidden rounded-2xl border-2 transition-all"
+        [ngClass]="selectedImage === image.id
+          ? 'border-[#60b9c8] shadow-md'
+          : 'border-transparent hover:border-gray-300'">
+
+        <img
+          [src]="image.src"
+          [alt]="image.alt"
+          class="h-full w-full object-cover"
+        />
+
+      </button>
+
+    </div>
+
+    <!-- Certificate Preview -->
+    <div
+      class="relative min-h-[500px] overflow-hidden rounded-2xl bg-gray-800 md:min-h-[650px]">
+
+      <!-- Background Image -->
+      <img
+        [src]="selectedCertificateImage"
+        alt="Certificate background"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+
+      <!-- Dark Overlay -->
+      <div class="absolute inset-0 bg-black/65"></div>
+
+      <!-- Certificate Details -->
+      <div
+        class="relative z-10 flex min-h-[500px] flex-col items-center justify-center px-5 py-12 text-center text-white md:min-h-[650px]">
+
+        <!-- Graduation Icon -->
+        <div class="mb-8">
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="h-16 w-16 md:h-20 md:w-20">
+
+            <path
+              d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3Zm-7 9.18V17l7 4 7-4v-4.82l-7 3.82-7-3.82Z"/>
+
+          </svg>
+
+        </div>
+
+        <!-- Certificate Title -->
+        <h2 class="mb-8 text-3xl font-semibold md:text-5xl">
+          Certificate of Completion
+        </h2>
+
+        <!-- Certificate Subtitle -->
+        <p class="mb-8 text-base md:text-xl">
+          This certificate is proudly presented to
+        </p>
+
+        <!-- Recipient Name -->
+        <h3 class="mb-10 text-3xl font-medium md:text-5xl">
+          First Name Last Name
+        </h3>
+
+        <!-- Certificate Description -->
+        <p class="max-w-3xl text-sm leading-7 md:text-xl">
+          For successfully completing the UIUX Designing and demonstrating
+          dedication, commitment, and achievement throughout the learning journey.
+        </p>
+
+        <p class="mt-5 max-w-3xl text-sm leading-7 md:text-lg">
+          This certificate recognizes the successful completion of all course requirements.
+        </p>
+
+      </div>
+
+      <!-- Issue Date -->
+      <div
+        class="absolute bottom-5 left-6 z-20 text-sm text-white md:bottom-8 md:left-10 md:text-lg">
+
+        Date of Issue: {{ currentDate }}
+
+      </div>
+
+      <!-- Download Button -->
+      <button
+        type="button"
+        (click)="downloadCertificate()"
+        class="absolute right-6 top-6 z-20 rounded-full bg-white/20 p-3 text-white transition hover:bg-white/40"
+        title="Download Certificate">
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          class="h-7 w-7">
+
+          <path
+            d="M12 3a1 1 0 0 1 1 1v9.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42l2.3 2.3V4a1 1 0 0 1 1-1ZM5 18a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z"/>
+
+        </svg>
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
