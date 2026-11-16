@@ -126,6 +126,16 @@ export const routes: Routes = [
           ),
         title: 'Role Management',
       },
+
+      {
+  path: 'certificate-template',
+  canActivate: [companyAdminGuard],
+  loadComponent: () =>
+    import('./certificate-module/certificate-designer/certificate-designer').then(
+      (m) => m.CertificateDesigner,
+    ),
+  title: 'Certificate Template',
+},
       // Subscription & Billing (company admin buys a package) + its payment step
       {
         path: 'subscription',

@@ -1,0 +1,409 @@
+<!-- xl: the height is measured in code (fitHeight) so the designer fills the screen under the app header
+     and the page itself never scrolls. -->
+<div #root [style.height.px]="fitHeight()" class="relative flex flex-col overflow-x-clip rounded-[22px] bg-[#f5f5f5] font-sans text-[#4d4d4d]">
+
+  @if (toast(); as t) {
+  <div
+    class="fixed left-1/2 top-6 z-[70] min-w-[150px] max-w-[40vw] -translate-x-1/2 rounded-xl px-5 py-3 text-center text-sm font-medium text-white shadow-lg"
+    [class]="t.kind === 'success' ? 'bg-[#2f7684]' : 'bg-red-700'"
+    [attr.role]="t.kind === 'error' ? 'alert' : 'status'">
+    {{ t.message }}
+  </div>
+  }
+
+  <!-- Reusable renderer: plain text + tags. Design mode shows tags as chips, Preview mode shows sample data. -->
+  <ng-template #rich let-segments>
+    @for (segment of segments; track $index) {
+      @if (segment.tag; as tag) {
+        @if (previewing()) {
+          <span [class]="emphasis(tag.key)">{{ sampleValue(tag.key) }}</span>
+        } @else {
+          <span
+            [class]="emphasis(tag.key)"
+            class="rounded-[0.6cqw] bg-[#e3f3f6] px-[0.8cqw] text-[#1f5f6c] outline-1 outline-dashed outline-[#2f7684]"
+            [title]="tag.hint">{{ tag.label }}</span>
+        }
+      } @else {
+        <span>{{ segment.text }}</span>
+      }
+    }
+  </ng-template>
+
+  <main class="flex flex-col px-4 pb-4 pt-2 sm:px-6 lg:px-10 xl:min-h-0 xl:flex-1">
+    <div class="mb-5 flex shrink-0 flex-wrap xl:mb-3 items-center justify-between gap-3">
+      <div>
+        <h1 class="text-xl font-semibold 2xl:text-[25px]">Certificate Template</h1>
+        <p class="mt-1 text-sm font-semibold">
+          Design the certificate learners receive after completing a course
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="inline-flex rounded-full bg-white p-1" role="group" aria-label="Certificate view">
+          <button
+            type="button"
+            (click)="setMode('design')"
+            [attr.aria-pressed]="!previewing()"
+            class="rounded-full px-4 py-1.5 text-xs font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-[#2f7684]"
+            [class]="!previewing() ? 'bg-[#2f7684] text-white' : ''">
+            Design
+          </button>
+          <button
+            type="button"
+            (click)="setMode('preview')"
+            [attr.aria-pressed]="previewing()"
+            class="rounded-full px-4 py-1.5 text-xs font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-[#2f7684]"
+            [class]="previewing() ? 'bg-[#2f7684] text-white' : ''">
+            Preview with sample data
+          </button>
+        </div>
+        <button
+          type="button"
+          (click)="reset()"
+          class="rounded-full border border-[#2f7684] bg-white px-5 py-2 text-xs font-semibold text-[#2f7684] outline-none transition hover:bg-[#e3f3f6] focus-visible:ring-2 focus-visible:ring-[#2f7684] focus-visible:ring-offset-2">
+          Reset
+        </button>
+        <button
+          type="button"
+          (click)="save()"
+          class="rounded-full bg-[#2f7684] px-6 py-2 text-xs font-semibold text-white outline-none transition hover:bg-[#276371] focus-visible:ring-2 focus-visible:ring-[#2f7684] focus-visible:ring-offset-2">
+          Save template
+        </button>
+      </div>
+    </div>
+
+    <!--
+      On large screens the grid takes all the height that is left under the page title,
+      so the page itself does not scroll. The certificate stays in place (and shrinks to fit),
+      and only the settings column on the right scrolls.
+    -->
+    <div class="grid items-start gap-5 xl:min-h-0 xl:flex-1 xl:grid-cols-[minmax(0,1fr)_clamp(380px,30vw,520px)] xl:grid-rows-[minmax(0,1fr)] xl:items-stretch">
+
+      <!-- ================= Certificate canvas (fixed) ================= -->
+      <section class="rounded-2xl bg-white p-4 sm:p-6 xl:flex xl:min-h-0 xl:flex-col xl:p-3" aria-label="Certificate preview">
+        <!-- xl: "stage" = all the space the section has left. The certificate is as large as fits
+             inside it (width = min(stage width, stage height x A4 ratio 1.4142)), centred. -->
+        <div class="xl:flex xl:min-h-0 xl:flex-1 xl:items-center xl:justify-center xl:[container-type:size]">
+        <div
+          class="@container relative mx-auto aspect-[297/210] w-full max-w-[1000px] overflow-hidden text-[#333333] shadow-[0_2px_14px_rgba(0,0,0,0.15)] xl:max-w-none xl:w-[min(100cqw,calc(100cqh_*_1.4142))]"
+          [style.font-family]="fontFamily()"
+          [style.--accent]="template().accent"
+          [style.background-color]="template().background"
+          [style.background-image]="backgroundImageCss()"
+          style="background-size: cover; background-position: center;">
+
+          <div class="pointer-events-none absolute inset-[2cqw]" [style.border]="borderCss()"></div>
+
+          <div class="absolute inset-[5cqw] flex flex-col items-center text-center">
+
+            <!-- Organization logo: left / center / right -->
+            <div class="flex h-[9cqw] w-full items-center" [class]="logoJustify()">
+              @if (logo(); as src) {
+                <img [src]="src" alt="Organization logo" class="max-h-full max-w-[26cqw] object-contain" />
+              } @else if (!previewing()) {
+                <span class="rounded-[0.8cqw] border border-dashed border-[#767676] px-[2cqw] py-[1cqw] text-[1.3cqw] text-[#595959]">
+                  Organization logo
+                </span>
+              }
+            </div>
+
+            <h2
+              class="mt-[1.6cqw] text-[4.4cqw] font-bold uppercase leading-tight tracking-[0.2cqw] text-[color:var(--accent)]">
+              <ng-container *ngTemplateOutlet="rich; context: { $implicit: view().title }" />
+            </h2>
+
+            <p class="mt-[1.4cqw] text-[1.8cqw] text-[#595959]">
+              <ng-container *ngTemplateOutlet="rich; context: { $implicit: view().subtitle }" />
+            </p>
+
+            <div class="my-auto flex w-full max-w-[70cqw] flex-col items-center gap-[0.8cqw] py-[1.4cqw] text-[2cqw] leading-snug">
+              @for (line of view().bodyLines; track $index) {
+                <p class="w-full whitespace-pre-line">
+                  <ng-container *ngTemplateOutlet="rich; context: { $implicit: line }" />
+                </p>
+              }
+            </div>
+
+            <!-- Footer: date | note | signature -->
+            <div class="mt-auto grid w-full grid-cols-[1fr_1.2fr_1fr] items-end gap-[3cqw]">
+              <div class="flex flex-col items-center">
+                <div class="flex min-h-[7cqw] w-full items-end justify-center border-b border-[#555555] pb-[0.6cqw] text-[1.9cqw] font-semibold">
+                  <span><ng-container *ngTemplateOutlet="rich; context: { $implicit: view().dateText }" /></span>
+                </div>
+                <p class="mt-[0.6cqw] text-[1.3cqw] text-[#595959]">
+                  <ng-container *ngTemplateOutlet="rich; context: { $implicit: view().dateLabel }" />
+                </p>
+              </div>
+
+              <p class="pb-[0.6cqw] text-[1.2cqw] text-[#595959]">
+                <ng-container *ngTemplateOutlet="rich; context: { $implicit: view().footerNote }" />
+              </p>
+
+              <div class="flex flex-col items-center">
+                <div class="flex min-h-[7cqw] w-full items-end justify-center border-b border-[#555555] pb-[0.6cqw]">
+                  @if (signature(); as sig) {
+                    <img [src]="sig" alt="Signature" class="max-h-[6.5cqw] max-w-full object-contain" />
+                  } @else if (!previewing()) {
+                    <span class="text-[1.2cqw] text-[#595959]">Signature</span>
+                  }
+                </div>
+                <p class="mt-[0.6cqw] text-[1.6cqw] font-semibold">
+                  <ng-container *ngTemplateOutlet="rich; context: { $implicit: view().signatoryName }" />
+                </p>
+                <p class="text-[1.3cqw] text-[#595959]">
+                  <ng-container *ngTemplateOutlet="rich; context: { $implicit: view().signatoryTitle }" />
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        @if (missingTags().length || unknownTags().length) {
+        <ul class="mx-auto mt-4 max-w-[1000px] space-y-1 rounded-xl bg-red-50 px-4 py-3 text-xs text-red-800" role="alert">
+          @for (tag of missingTags(); track tag.key) {
+            <li>The <strong>{{ tag.label }}</strong> tag is missing. Add it from “Insert a tag” so the certificate shows the {{ tag.hint.toLowerCase() }}.</li>
+          }
+          @for (name of unknownTags(); track name) {
+            <li><strong>{{ name }}</strong> is not a known tag. Check the spelling or pick a tag from the list.</li>
+          }
+        </ul>
+        } @else {
+        <p class="mx-auto mt-2 max-w-[1000px] text-xs text-[#595959]">
+          @if (previewing()) {
+            Preview uses sample data. Each learner's real name, course and date fill in automatically when the certificate is generated.
+          } @else {
+            Highlighted chips are tags. They are replaced by each learner's real details when the certificate is generated.
+          }
+        </p>
+        }
+      </section>
+
+      <!-- ================= Controls (only this column scrolls) ================= -->
+      <form [formGroup]="form" class="space-y-4 xl:min-h-0 xl:overflow-y-auto xl:pr-2" aria-label="Certificate settings">
+
+        <fieldset class="rounded-2xl bg-white p-5">
+          <legend class="float-left mb-3 w-full text-sm font-semibold">Insert a tag</legend>
+          <p class="clear-both mb-3 text-xs text-[#595959]">
+            Click a tag to add it where your cursor is (now: <strong>{{ activeLabel() }}</strong>). A tag looks like
+            <code class="rounded bg-[#f5f5f5] px-1">{{ exampleTag }}</code> and is replaced automatically for each learner.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            @for (tag of tags; track tag.key) {
+              <button
+                type="button"
+                (click)="insertTag(tag)"
+                [title]="tag.hint"
+                [attr.aria-label]="'Insert ' + tag.label + ' tag into ' + activeLabel()"
+                class="rounded-full border border-[#2f7684] bg-white px-3 py-1.5 text-xs font-semibold text-[#2f7684] outline-none transition hover:bg-[#e3f3f6] focus-visible:ring-2 focus-visible:ring-[#2f7684]">
+                + {{ tag.label }}
+              </button>
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="space-y-3 rounded-2xl bg-white p-5">
+          <legend class="float-left mb-3 w-full text-sm font-semibold">Content</legend>
+
+          <div class="clear-both">
+            <label for="cert-title" class="mb-1 block text-xs font-semibold">Title</label>
+            <input id="cert-title" type="text" formControlName="title" autocomplete="off"
+              (focus)="rememberField('title', $event)" (blur)="rememberField('title', $event)"
+              class="w-full rounded-lg border border-[#767676] bg-white px-3 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]" />
+          </div>
+          <div>
+            <label for="cert-subtitle" class="mb-1 block text-xs font-semibold">Subtitle</label>
+            <input id="cert-subtitle" type="text" formControlName="subtitle" autocomplete="off"
+              (focus)="rememberField('subtitle', $event)" (blur)="rememberField('subtitle', $event)"
+              class="w-full rounded-lg border border-[#767676] bg-white px-3 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]" />
+          </div>
+          <div>
+            <label for="cert-body" class="mb-1 block text-xs font-semibold">Main text (one line per row)</label>
+            <textarea id="cert-body" rows="6" formControlName="body"
+              (focus)="rememberField('body', $event)" (blur)="rememberField('body', $event)"
+              class="w-full resize-y rounded-lg border border-[#767676] bg-white px-3 py-2 text-xs leading-relaxed outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]"></textarea>
+          </div>
+          <div>
+            <label for="cert-footer-note" class="mb-1 block text-xs font-semibold">Footer note</label>
+            <input id="cert-footer-note" type="text" formControlName="footerNote" autocomplete="off"
+              (focus)="rememberField('footerNote', $event)" (blur)="rememberField('footerNote', $event)"
+              class="w-full rounded-lg border border-[#767676] bg-white px-3 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]" />
+          </div>
+        </fieldset>
+
+        <fieldset class="space-y-3 rounded-2xl bg-white p-5">
+          <legend class="float-left mb-3 w-full text-sm font-semibold">Date &amp; signature</legend>
+
+          <div class="clear-both grid grid-cols-2 gap-3">
+            <div>
+              <label for="cert-date-text" class="mb-1 block text-xs font-semibold">Date</label>
+              <input id="cert-date-text" type="text" formControlName="dateText" autocomplete="off"
+                (focus)="rememberField('dateText', $event)" (blur)="rememberField('dateText', $event)"
+                class="w-full rounded-lg border border-[#767676] bg-white px-3 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]" />
+            </div>
+            <div>
+              <label for="cert-date-label" class="mb-1 block text-xs font-semibold">Date caption</label>
+              <input id="cert-date-label" type="text" formControlName="dateLabel" autocomplete="off"
+                (focus)="rememberField('dateLabel', $event)" (blur)="rememberField('dateLabel', $event)"
+                class="w-full rounded-lg border border-[#767676] bg-white px-3 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]" />
+            </div>
+            <div>
+              <label for="cert-sign-name" class="mb-1 block text-xs font-semibold">Signatory name</label>
+              <input id="cert-sign-name" type="text" formControlName="signatoryName" autocomplete="off"
+                (focus)="rememberField('signatoryName', $event)" (blur)="rememberField('signatoryName', $event)"
+                class="w-full rounded-lg border border-[#767676] bg-white px-3 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]" />
+            </div>
+            <div>
+              <label for="cert-sign-title" class="mb-1 block text-xs font-semibold">Designation</label>
+              <input id="cert-sign-title" type="text" formControlName="signatoryTitle" autocomplete="off"
+                (focus)="rememberField('signatoryTitle', $event)" (blur)="rememberField('signatoryTitle', $event)"
+                class="w-full rounded-lg border border-[#767676] bg-white px-3 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]" />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="space-y-4 rounded-2xl bg-white p-5">
+          <legend class="float-left mb-3 w-full text-sm font-semibold">Branding</legend>
+
+          <div class="clear-both flex items-center justify-between gap-3">
+            <span class="text-xs font-semibold">Organization logo</span>
+            <span class="flex items-center gap-2">
+              <label class="cursor-pointer rounded-full border border-[#2f7684] px-3 py-1.5 text-xs font-semibold text-[#2f7684] transition hover:bg-[#e3f3f6] focus-within:ring-2 focus-within:ring-[#2f7684]">
+                {{ logo() ? 'Change' : 'Upload' }}
+                <input type="file" class="sr-only" accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  aria-label="Upload organization logo" (change)="onImagePicked('logo', $event)" />
+              </label>
+              @if (logo()) {
+                <button type="button" (click)="removeImage('logo')"
+                  class="rounded-full px-3 py-1.5 text-xs font-semibold text-red-700 outline-none hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-700">
+                  Remove
+                </button>
+              }
+            </span>
+          </div>
+
+          <div>
+            <label for="cert-logo-position" class="mb-1 block text-xs font-semibold">Logo position</label>
+            <select id="cert-logo-position" formControlName="logoPosition"
+              class="w-full rounded-lg border border-[#767676] bg-white px-2 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]">
+              @for (position of logoPositions; track position.id) {
+                <option [value]="position.id">{{ position.label }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="flex items-center justify-between gap-3">
+            <span class="text-xs font-semibold">Signature image</span>
+            <span class="flex items-center gap-2">
+              <label class="cursor-pointer rounded-full border border-[#2f7684] px-3 py-1.5 text-xs font-semibold text-[#2f7684] transition hover:bg-[#e3f3f6] focus-within:ring-2 focus-within:ring-[#2f7684]">
+                {{ signature() ? 'Change' : 'Upload' }}
+                <input type="file" class="sr-only" accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  aria-label="Upload signature image" (change)="onImagePicked('signature', $event)" />
+              </label>
+              @if (signature()) {
+                <button type="button" (click)="removeImage('signature')"
+                  class="rounded-full px-3 py-1.5 text-xs font-semibold text-red-700 outline-none hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-700">
+                  Remove
+                </button>
+              }
+            </span>
+          </div>
+
+          @if (uploadError(); as message) {
+            <p class="text-xs text-red-700" role="alert">{{ message }}</p>
+          }
+          <p class="text-[11px] text-[#595959]">PNG, JPG, WebP or SVG, up to 2 MB. A transparent PNG works best for the signature. Use a light background image so the text stays readable.</p>
+
+          <div class="flex items-center justify-between gap-3">
+            <span class="text-xs font-semibold">Background image</span>
+            <span class="flex items-center gap-2">
+              <label class="cursor-pointer rounded-full border border-[#2f7684] px-3 py-1.5 text-xs font-semibold text-[#2f7684] transition hover:bg-[#e3f3f6] focus-within:ring-2 focus-within:ring-[#2f7684]">
+                {{ backgroundImage() ? 'Change' : 'Upload' }}
+                <input type="file" class="sr-only" accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  aria-label="Upload certificate background image" (change)="onImagePicked('background', $event)" />
+              </label>
+              @if (backgroundImage()) {
+                <button type="button" (click)="removeImage('background')"
+                  class="rounded-full px-3 py-1.5 text-xs font-semibold text-red-700 outline-none hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-700">
+                  Remove
+                </button>
+              }
+            </span>
+          </div>
+
+          <div>
+            <span id="background-label" class="mb-2 block text-xs font-semibold">Background colour</span>
+            <div class="flex flex-wrap items-center gap-2" role="radiogroup" aria-labelledby="background-label">
+              @for (bg of backgrounds; track bg.hex) {
+                <label class="cursor-pointer">
+                  <input type="radio" formControlName="background" [value]="bg.hex" class="peer sr-only" [attr.aria-label]="bg.label" />
+                  <span class="block h-7 w-7 rounded-full border border-[#767676] ring-2 ring-transparent ring-offset-2 transition peer-checked:ring-[#333333] peer-focus-visible:ring-[#2f7684]"
+                    [style.background-color]="bg.hex" [title]="bg.label"></span>
+                </label>
+              }
+              <label class="ml-1 flex cursor-pointer items-center gap-2 text-xs font-semibold">
+                Custom
+                <input type="color" formControlName="background" aria-label="Custom background colour"
+                  class="h-7 w-9 cursor-pointer rounded border border-[#767676] bg-white p-0.5 outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]" />
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <span id="accent-label" class="mb-2 block text-xs font-semibold">Colour</span>
+            <div class="flex flex-wrap gap-2" role="radiogroup" aria-labelledby="accent-label">
+              @for (accent of accents; track accent.hex) {
+                <label class="cursor-pointer">
+                  <input type="radio" formControlName="accent" [value]="accent.hex" class="peer sr-only" [attr.aria-label]="accent.label" />
+                  <span class="block h-7 w-7 rounded-full ring-2 ring-transparent ring-offset-2 transition peer-checked:ring-[#333333] peer-focus-visible:ring-[#2f7684]"
+                    [style.background-color]="accent.hex" [title]="accent.label"></span>
+                </label>
+              }
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="cert-font" class="mb-1 block text-xs font-semibold">Font</label>
+              <select id="cert-font" formControlName="font"
+                class="w-full rounded-lg border border-[#767676] bg-white px-2 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]">
+                @for (font of fonts; track font.id) {
+                  <option [value]="font.id">{{ font.label }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label for="cert-border" class="mb-1 block text-xs font-semibold">Border</label>
+              <select id="cert-border" formControlName="border"
+                class="w-full rounded-lg border border-[#767676] bg-white px-2 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]">
+                <option value="double">Double line</option>
+                <option value="single">Single line</option>
+                <option value="none">No border</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="space-y-3 rounded-2xl bg-white p-5">
+          <legend class="float-left mb-1 w-full text-sm font-semibold">Sample data for preview</legend>
+          <p class="clear-both text-xs text-[#595959]">Type any values to test the preview. Empty fields show the tag name. Nothing here is saved.</p>
+          <div>
+            <label for="sample-name" class="mb-1 block text-xs font-semibold">Learner name</label>
+            <input id="sample-name" type="text" formControlName="sampleName" autocomplete="off" placeholder="Enter Name"
+              class="w-full rounded-lg border border-[#767676] bg-white px-3 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]" />
+          </div>
+          <div>
+            <label for="sample-course" class="mb-1 block text-xs font-semibold">Course name</label>
+            <input id="sample-course" type="text" formControlName="sampleCourse" autocomplete="off" placeholder="Enter Course Name"
+              class="w-full rounded-lg border border-[#767676] bg-white px-3 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]" />
+          </div>
+          <div>
+            <label for="sample-date" class="mb-1 block text-xs font-semibold">Completion date</label>
+            <input id="sample-date" type="text" formControlName="sampleDate" autocomplete="off" placeholder="e.g. 16 November 2026"
+              class="w-full rounded-lg border border-[#767676] bg-white px-3 py-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-[#2f7684]" />
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </main>
+</div>

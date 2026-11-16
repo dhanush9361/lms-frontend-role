@@ -255,6 +255,15 @@ export class AdminDashboard {
       return crumbs;
     }
 
+    // Certificate Template designer (/admin-dashboard/certificate-template)
+    // Flow: Dashboard > Certificate Template
+    if (/^\/admin-dashboard\/certificate-template\/?$/.test(path)) {
+      return [
+        { label: 'Dashboard', link: ['/admin-dashboard', 'admin-dashboard-home'], plain: true },
+        { label: 'Certificate Template', link: null, plain: true },
+      ];
+    }
+
     // Edit Profile (/admin-dashboard/edit-profile)
     // Flow: Dashboard > Edit Profile > User Profile Management
     if (/^\/admin-dashboard\/edit-profile\/?$/.test(path)) {
