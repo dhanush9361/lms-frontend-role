@@ -10,8 +10,9 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { map, startWith } from 'rxjs';
 
 import { CertificateTemplateService } from '../../services/certificate-template.service';
@@ -68,6 +69,13 @@ const LOGO_JUSTIFY: Record<CertificateLogoPosition, string> = {
 const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'];
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 
+/** Pictures wider than this (in px) are shrunk after upload, so the saved template and the page stay light. */
+const MAX_IMAGE_WIDTH: Record<ImageKind, number> = {
+  logo: 600,
+  signature: 600,
+  background: 1600,
+};
+
 @Component({
   selector: 'app-certificate-designer',
   imports: [ReactiveFormsModule, NgTemplateOutlet],
@@ -78,6 +86,7 @@ export class CertificateDesigner {
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(CertificateTemplateService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly sanitizer = inject(DomSanitizer);
 
   readonly tags = CERTIFICATE_TAGS;
   readonly fonts = CERTIFICATE_FONTS;
@@ -87,7 +96,8 @@ export class CertificateDesigner {
   /** Shown in the help text (kept in code so Angular does not read the braces as an interpolation). */
   readonly exampleTag = '{{learner_name}}';
 
-  private readonly initial = this.store.load();
+  /** The form starts with the default design; the saved design is loaded from the server right away (see loadTemplate). */
+  private readonly initial: CertificateTemplate = DEFAULT_CERTIFICATE_TEMPLATE;
 
   readonly form = this.fb.nonNullable.group({
     title: [this.initial.title],
@@ -113,11 +123,27 @@ export class CertificateDesigner {
   readonly logo = signal<string | null>(this.initial.logo);
   readonly signature = signal<string | null>(this.initial.signature);
   readonly backgroundImage = signal<string | null>(this.initial.backgroundImage);
+
+  /**
+   * Safe versions of the logo / signature for <img [src]>. Angular's URL sanitizer rewrites
+   * "data:image/svg+xml..." to "unsafe:...", so SVG pictures would not show. Only data:image/ values
+   * (what the file picker and the server give us) are trusted, and an <img> never runs SVG scripts.
+   * Computed signals keep the same SafeUrl object between change detections (no flicker / reload).
+   */
+  readonly logoSrc = computed(() => this.trustImage(this.logo()));
+  readonly signatureSrc = computed(() => this.trustImage(this.signature()));
+
   readonly mode = signal<ViewMode>('design');
   readonly previewing = computed(() => this.mode() === 'preview');
 
   readonly activeControl = signal<TextControl>('body');
   readonly activeLabel = computed(() => FIELD_LABELS[this.activeControl()]);
+
+  /** Loading the saved design from the server. */
+  readonly loading = signal(true);
+  /** Set when the saved design could not be loaded: saving is blocked so the default design can't overwrite it. */
+  readonly loadError = signal<string | null>(null);
+  readonly saving = signal(false);
 
   readonly toast = signal<{ kind: 'success' | 'error'; message: string } | null>(null);
   readonly uploadError = signal<string | null>(null);
@@ -222,6 +248,7 @@ export class CertificateDesigner {
   private previousOverflow: { html: string; body: string } | null = null;
 
   constructor() {
+    this.loadTemplate();
     this.destroyRef.onDestroy(() => {
       clearTimeout(this.toastTimer);
       this.unlockPageScroll();
@@ -348,8 +375,10 @@ export class CertificateDesigner {
     reader.onload = () => {
       const result = typeof reader.result === 'string' ? reader.result : null;
       if (!result) return;
-      this.imageSignal(kind).set(result);
-      this.uploadError.set(null);
+      this.downscale(result, file.type, MAX_IMAGE_WIDTH[kind]).then((finalImage) => {
+        this.imageSignal(kind).set(finalImage);
+        this.uploadError.set(null);
+      });
     };
     reader.onerror = () => this.uploadError.set('The image could not be read. Please try another file.');
     reader.readAsDataURL(file);
@@ -371,11 +400,73 @@ export class CertificateDesigner {
     }
   }
 
-  // ---------- reset ----------
+  /**
+   * Shrinks a big picture so the page and the saved template stay light. SVG is left as it is (it is vector),
+   * and so is any picture that is already small enough or that cannot be redrawn. Never rejects.
+   */
+  private downscale(dataUrl: string, type: string, maxWidth: number): Promise<string> {
+    if (type === 'image/svg+xml') return Promise.resolve(dataUrl);
 
-  /** Back to the blank default design. Nothing is saved until the admin clicks Save. */
-  reset(): void {
-    const d = DEFAULT_CERTIFICATE_TEMPLATE;
+    return new Promise<string>((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        if (!img.width || img.width <= maxWidth) {
+          resolve(dataUrl);
+          return;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = maxWidth;
+        canvas.height = Math.max(1, Math.round((img.height * maxWidth) / img.width));
+        const context = canvas.getContext('2d');
+        if (!context) {
+          resolve(dataUrl);
+          return;
+        }
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+        // PNG stays PNG (keeps the transparent signature), JPEG and WebP keep their type.
+        const outType = type === 'image/jpeg' || type === 'image/webp' ? type : 'image/png';
+        try {
+          const smaller = canvas.toDataURL(outType, 0.9);
+          resolve(smaller.length < dataUrl.length ? smaller : dataUrl);
+        } catch {
+          resolve(dataUrl);
+        }
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  }
+
+  /** Marks a data:image/ picture as safe for <img [src]>; anything else is not shown. */
+  private trustImage(value: string | null): SafeUrl | null {
+    if (!value || !value.startsWith('data:image/')) return null;
+    return this.sanitizer.bypassSecurityTrustUrl(value);
+  }
+
+  // ---------- load from the server ----------
+
+  /** Fetches the saved design of this organization (the default design when none was saved yet). */
+  loadTemplate(): void {
+    this.loading.set(true);
+    this.loadError.set(null);
+    this.store
+      .load()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (template) => {
+          this.applyTemplate(template);
+          this.form.markAsPristine();
+          this.loading.set(false);
+        },
+        error: (error) => {
+          this.loading.set(false);
+          this.loadError.set(this.messageOf(error, 'The saved certificate template could not be loaded.'));
+        },
+      });
+  }
+
+  /** Puts a design on screen: the form fields and the three pictures. */
+  private applyTemplate(d: CertificateTemplate): void {
     this.form.patchValue({
       title: d.title,
       subtitle: d.subtitle,
@@ -395,12 +486,21 @@ export class CertificateDesigner {
     this.signature.set(d.signature);
     this.backgroundImage.set(d.backgroundImage);
     this.uploadError.set(null);
+  }
+
+  // ---------- reset ----------
+
+  /** Back to the blank default design. Nothing is saved until the admin clicks Save. */
+  reset(): void {
+    this.applyTemplate(DEFAULT_CERTIFICATE_TEMPLATE);
+    this.form.markAsDirty();
     this.flash('success', 'Design reset. Click Save template to keep it.');
   }
 
   // ---------- save ----------
 
   save(): void {
+    if (this.saving() || this.loading() || this.loadError()) return;
     const missing = this.missingTags();
     if (missing.length) {
       this.flash('error', `Add the ${missing.map((t) => t.label).join(' and ')} tag before saving.`);
@@ -410,12 +510,31 @@ export class CertificateDesigner {
       this.flash('error', `Fix the unknown tag ${this.unknownTags()[0]} before saving.`);
       return;
     }
-    if (this.store.save(this.template())) {
-      this.form.markAsPristine();
-      this.flash('success', 'Certificate template saved.');
-    } else {
-      this.flash('error', 'The template could not be saved. Try smaller logo / signature images.');
-    }
+    this.saving.set(true);
+    this.store
+      .save(this.template())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.form.markAsPristine();
+          this.flash('success', 'Certificate template saved.');
+        },
+        error: (error) => {
+          this.saving.set(false);
+          this.flash(
+            'error',
+            error?.status === 413
+              ? 'The template is too large. Try smaller logo / signature images.'
+              : this.messageOf(error, 'The template could not be saved. Please try again.'),
+          );
+        },
+      });
+  }
+
+  /** The message the server sent (it explains what is wrong), or a fallback. */
+  private messageOf(error: { error?: { message?: string } } | undefined, fallback: string): string {
+    return error?.error?.message || fallback;
   }
 
   private flash(kind: 'success' | 'error', message: string): void {
