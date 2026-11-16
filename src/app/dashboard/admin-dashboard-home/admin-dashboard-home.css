@@ -1,0 +1,261 @@
+.dashboard-content {
+  isolation: isolate;
+}
+
+.dashboard-scroll {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-card {
+  border: 1px solid rgb(45 80 88 / 4%);
+  box-shadow: 0 5px 18px rgb(34 67 72 / 4%);
+  animation: dashboard-card-enter 560ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.dashboard-chart-grid .dashboard-card:nth-child(2) {
+  animation-delay: 80ms;
+}
+
+.dashboard-bottom-grid > .dashboard-card:nth-child(1) {
+  animation-delay: 140ms;
+}
+
+.dashboard-role-cards .dashboard-card:nth-child(1) {
+  animation-delay: 180ms;
+}
+
+.dashboard-role-cards .dashboard-card:nth-child(2) {
+  animation-delay: 230ms;
+}
+
+.dashboard-role-cards .dashboard-card:nth-child(3) {
+  animation-delay: 280ms;
+}
+
+.dashboard-bottom-grid > .dashboard-card:last-child {
+  animation-delay: 320ms;
+}
+
+.chart-area {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: area-reveal 900ms cubic-bezier(0.2, 0.7, 0.25, 1) both;
+}
+
+.chart-area-delayed {
+  animation-delay: 100ms;
+}
+
+.revenue-area {
+  animation-delay: 160ms;
+}
+
+.chart-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: chart-draw 1.25s cubic-bezier(0.32, 0.72, 0.25, 1) 180ms forwards;
+}
+
+.chart-line-delayed {
+  animation-delay: 300ms;
+}
+
+.donut-segment {
+  --circumference: 659.734px;
+
+  stroke-dasharray: 0 var(--circumference);
+  animation: donut-reveal 1.15s cubic-bezier(0.22, 0.72, 0.25, 1) 220ms both;
+}
+
+.donut-segment-delayed {
+  animation-delay: 320ms;
+}
+
+.donut-segment-later {
+  animation-delay: 420ms;
+}
+
+.dashboard-metrics-panel {
+  align-content: center;
+}
+
+.metric-bubbles {
+  position: relative;
+  width: min(220px, 52%);
+  min-width: 180px;
+  height: 190px;
+  flex: 0 1 220px;
+}
+
+.metric-bubble {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  animation: bubble-enter 900ms cubic-bezier(0.2, 0.7, 0.25, 1) both;
+}
+
+.metric-bubble-purple {
+  top: 3px;
+  left: 15px;
+  width: 84px;
+  height: 84px;
+  background: #9148ec;
+}
+
+.metric-bubble-blue {
+  top: 94px;
+  left: 18px;
+  width: 68px;
+  height: 68px;
+  background: #5f78df;
+  animation-delay: 100ms;
+}
+
+.metric-bubble-teal {
+  top: 22px;
+  right: 4px;
+  width: 132px;
+  height: 132px;
+  background: #48adbd;
+  animation-delay: 180ms;
+}
+
+.metric-legend {
+  display: grid;
+  width: min(100%, 290px);
+  gap: 20px;
+  color: #555;
+  font-size: 12px;
+}
+
+.metric-legend-row {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+}
+
+.metric-legend-row strong {
+  padding-left: 5px;
+  color: #666;
+  font-weight: 500;
+  text-align: right;
+}
+
+.metric-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+@keyframes dashboard-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chart-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes area-reveal {
+  from {
+    opacity: 0;
+    transform: scaleY(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes donut-reveal {
+  from {
+    stroke-dasharray: 0 var(--circumference);
+  }
+  to {
+    stroke-dasharray: var(--segment-length) var(--circumference);
+  }
+}
+
+@keyframes bubble-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 1023px) {
+  .dashboard-bottom-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .dashboard-role-cards {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .dashboard-metrics-panel {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 639px) {
+  .dashboard-welcome {
+    margin-bottom: 16px;
+  }
+
+  .dashboard-bottom-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-role-cards,
+  .dashboard-metrics-panel {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .dashboard-metrics-panel {
+    gap: 8px;
+    padding: 20px 14px;
+  }
+
+  .metric-bubbles {
+    width: 100%;
+    max-width: 220px;
+    flex-basis: 100%;
+  }
+
+  .metric-legend {
+    width: 100%;
+    gap: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

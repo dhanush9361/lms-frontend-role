@@ -30,29 +30,33 @@ export class EnrollmentService {
 
   /** Backend caps page size at 100. */
   private static readonly PAGE_SIZE = 100;
-  /** Safety valve so a runaway course can never trigger unbounded requests. */
-  private static readonly MAX_PAGES = 50;
 
-  // ---------- Enrolled Course List ----------
+ // ---------- Enrolled Course List ----------
 
-  /** Loads every page (the UI has no pager) and maps it to the table model. */
-  getEnrollments(courseId: number): Observable<Enrollment[]> {
-    return this.fetchPage(courseId, 0).pipe(
-      expand(page => {
-        const current = page.number ?? page.page?.number ?? 0;
-        const total = page.totalPages ?? page.page?.totalPages ?? 1;
-        const next = current + 1;
-        return next < total && next < EnrollmentService.MAX_PAGES
-          ? this.fetchPage(courseId, next)
-          : EMPTY;
-      }),
-      reduce(
-        (all, page) => all.concat(page.content.map(row => this.toEnrollment(row))),
-        [] as Enrollment[],
-      ),
-      catchError(this.handleError),
-    );
-  }
+/** Loads every page (the UI has no pager) and maps it to the table model. */
+getEnrollments(courseId: number): Observable<Enrollment[]> {
+  return this.fetchPage(courseId, 0).pipe(
+    expand((page, index) => {
+      const current = page.number ?? page.page?.number ?? index;
+      const total = page.totalPages ?? page.page?.totalPages ?? 1;
+      const next = current + 1;
+
+      return next < total
+        ? this.fetchPage(courseId, next).pipe(
+            map((nextPage) => ({
+              ...nextPage,
+              number: nextPage.number ?? nextPage.page?.number ?? next,
+            })),
+          )
+        : EMPTY;
+    }),
+    reduce(
+      (all, page) => all.concat(page.content.map((row) => this.toEnrollment(row))),
+      [] as Enrollment[],
+    ),
+    catchError(this.handleError),
+  );
+}
 
   // ---------- Enroll User form ----------
 
