@@ -1,4 +1,236 @@
-<section class="px-4 py-6 sm:px-6 lg:px-10">
-  <h1 class="text-xl font-semibold text-[#333] 2xl:text-[25px]">Learner Dashboard</h1>
-  <p class="mt-1 text-sm text-[#505050] 2xl:text-[16px]">Welcome, {{ displayName() }}.</p>
-</section>
+
+<div class="min-h-full w-full overflow-x-hidden bg-[#f5f5f5] px-3 py-4 sm:px-5 lg:px-6">
+
+  <div
+    class="w-full transition-all duration-700 ease-out"
+    [class.opacity-0]="!isVisible()"
+    [class.translate-y-4]="!isVisible()"
+  >
+
+    <!-- Welcome -->
+    <div class="mb-7 flex flex-wrap items-baseline gap-3">
+      <h2 class="text-3xl font-bold text-[#62bdca] sm:text-4xl">
+        Hi {{ displayName() }}
+      </h2>
+      <span class="text-base font-medium text-[#555]">
+        Welcome Back
+      </span>
+    </div>
+
+    <!-- Dashboard Cards -->
+    <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+
+      <div class="group relative flex min-h-[105px] items-center justify-between overflow-hidden rounded-2xl bg-white px-5 py-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <div class="absolute bottom-7 left-0 top-7 w-[3px] rounded-r-full bg-[#a064f5]"></div>
+        <span class="text-base font-medium leading-6 text-[#555]">Passed<br>Quizzes</span>
+        <span class="text-4xl font-light text-[#555]">{{ dashboard()?.passedQuizzes ?? '—' }}</span>
+      </div>
+
+      <div class="group relative flex min-h-[105px] items-center justify-between overflow-hidden rounded-2xl bg-white px-5 py-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <div class="absolute bottom-7 left-0 top-7 w-[3px] rounded-r-full bg-[#7185ed]"></div>
+        <span class="text-base font-medium leading-6 text-[#555]">My Enrolled<br>Courses</span>
+        <span class="text-4xl font-light text-[#555]">{{ dashboard()?.enrolledCourses ?? '—' }}</span>
+      </div>
+
+      <div class="group relative flex min-h-[105px] items-center justify-between overflow-hidden rounded-2xl bg-white px-5 py-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <div class="absolute bottom-7 left-0 top-7 w-[3px] rounded-r-full bg-[#65c98b]"></div>
+        <span class="text-base font-medium leading-6 text-[#555]">Completed<br>Courses</span>
+        <span class="text-4xl font-light text-[#555]">{{ dashboard()?.completedCourses ?? '—' }}</span>
+      </div>
+
+      <div class="group relative flex min-h-[105px] items-center justify-between overflow-hidden rounded-2xl bg-white px-5 py-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <div class="absolute bottom-7 left-0 top-7 w-[3px] rounded-r-full bg-[#ffc44f]"></div>
+        <span class="text-base font-medium leading-6 text-[#555]">In Progress<br>Courses</span>
+        <span class="text-4xl font-light text-[#555]">{{ dashboard()?.inProgressCourses ?? '—' }}</span>
+      </div>
+
+      <div class="group relative flex min-h-[105px] items-center justify-between overflow-hidden rounded-2xl bg-white px-5 py-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <div class="absolute bottom-7 left-0 top-7 w-[3px] rounded-r-full bg-[#ff6868]"></div>
+        <span class="text-base font-medium leading-6 text-[#555]">Not Started<br>Courses</span>
+        <span class="text-4xl font-light text-[#555]">{{ dashboard()?.notStartedCourses ?? '—' }}</span>
+      </div>
+
+    </div>
+
+    <!-- Analytics -->
+    <div class="grid w-full grid-cols-1 gap-5 xl:grid-cols-[1.2fr_1fr]">
+
+      <!-- Training Analytics -->
+      <div class="min-w-0 rounded-2xl bg-white p-5 shadow-sm transition-all duration-500 hover:shadow-md sm:p-6">
+
+        <div class="mb-7 flex flex-wrap items-center justify-between gap-3">
+          <h3 class="text-2xl font-medium text-[#555]">Training Analytics</h3>
+
+          <span class="rounded-full bg-[#f5f5f5] px-5 py-2 text-sm text-[#777]">
+            Your total courses - {{ dashboard()?.enrolledCourses ?? '—' }}
+          </span>
+        </div>
+
+        <div class="flex">
+          <div class="flex h-[400px] w-12 shrink-0 flex-col justify-between pb-1 text-xs text-[#666]">
+            <span>14 Hrs</span>
+            <span>12 Hrs</span>
+            <span>10 Hrs</span>
+            <span>8 Hrs</span>
+            <span>4 Hrs</span>
+            <span>2 Hrs</span>
+            <span>0</span>
+          </div>
+
+          <div class="relative h-[400px] min-w-0 flex-1">
+            <svg class="h-full w-full" viewBox="0 0 700 400" preserveAspectRatio="none">
+              <g stroke="#d5d5d5" stroke-width="1" stroke-dasharray="3 4">
+                <line x1="0" y1="5" x2="700" y2="5"/>
+                <line x1="0" y1="71" x2="700" y2="71"/>
+                <line x1="0" y1="137" x2="700" y2="137"/>
+                <line x1="0" y1="203" x2="700" y2="203"/>
+                <line x1="0" y1="269" x2="700" y2="269"/>
+                <line x1="0" y1="335" x2="700" y2="335"/>
+                <line x1="0" y1="399" x2="700" y2="399"/>
+              </g>
+            </svg>
+
+            <div *ngIf="!hasTrainingTime"
+              class="absolute inset-0 flex items-center justify-center">
+              <span class="rounded-full bg-white/90 px-5 py-2 text-sm text-[#999]">
+                No data available
+              </span>
+            </div>
+          </div>
+        </div>
+
+      <div class="mt-6 flex flex-wrap items-center gap-3 text-xs text-[#555] sm:text-sm">
+
+  <ng-container *ngIf="dashboard()?.quizCourses?.length; else noCourseNames">
+    <span
+      *ngFor="let course of dashboard()?.quizCourses"
+      class="rounded-full bg-[#f5f5f5] px-4 py-2 font-medium text-[#777]">
+      {{ course.name }}
+    </span>
+  </ng-container>
+
+  <ng-template #noCourseNames>
+    <span class="text-[#999]">No course data</span>
+  </ng-template>
+
+</div>
+      </div>
+
+      <!-- Right Charts -->
+      <div class="grid min-w-0 grid-rows-2 gap-5">
+
+        <!-- Quiz Scores -->
+        <div class="min-w-0 rounded-2xl bg-white p-5 shadow-sm transition-all duration-500 hover:shadow-md sm:p-6">
+
+          <div class="mb-5 flex items-center justify-end gap-2">
+            <span class="h-3 w-3 rounded-sm bg-[#a064f5]"></span>
+            <span class="text-xs text-[#777]">Scores</span>
+          </div>
+
+          <div class="flex h-[180px]">
+            <div class="flex w-10 shrink-0 flex-col justify-between pb-1 text-xs text-[#666]">
+              <span>100</span>
+              <span>75</span>
+              <span>50</span>
+              <span>25</span>
+              <span>0</span>
+            </div>
+
+            <div class="relative min-w-0 flex-1">
+              <svg class="h-full w-full" viewBox="0 0 600 180" preserveAspectRatio="none">
+                <g stroke="#d5d5d5" stroke-width="1" stroke-dasharray="3 4">
+                  <line x1="0" y1="5" x2="600" y2="5"/>
+                  <line x1="0" y1="47" x2="600" y2="47"/>
+                  <line x1="0" y1="89" x2="600" y2="89"/>
+                  <line x1="0" y1="131" x2="600" y2="131"/>
+                  <line x1="0" y1="179" x2="600" y2="179"/>
+                </g>
+              </svg>
+
+              <div *ngIf="!hasQuizScores"
+                class="absolute inset-0 flex items-center justify-center">
+                <span class="rounded-full bg-white/90 px-4 py-2 text-xs text-[#999]">
+                  No data available
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 flex items-center justify-between gap-2 text-xs text-[#555] sm:text-sm">
+            <button type="button" disabled class="flex h-6 w-6 items-center justify-center rounded-full bg-[#f5f5f5] text-[#80c8d2]">‹</button>
+            <span>No quiz data</span>
+            <button type="button" disabled class="flex h-6 w-6 items-center justify-center rounded-full bg-[#f5f5f5] text-[#80c8d2]">›</button>
+          </div>
+
+        </div>
+
+        <!-- Course Status -->
+        <div class="flex min-w-0 flex-col justify-center rounded-2xl bg-white p-5 shadow-sm transition-all duration-500 hover:shadow-md sm:p-6">
+
+          <div class="flex flex-col items-center justify-around gap-7 sm:flex-row">
+
+            <div class="relative flex h-[200px] w-[200px] shrink-0 items-center justify-center">
+              <div
+                class="h-[200px] w-[200px] rounded-full transition-all duration-[1800ms] ease-out"
+                [style.background]="doughnutGradient">
+              </div>
+
+              <div class="absolute flex h-[108px] w-[108px] flex-col items-center justify-center rounded-full bg-white">
+                <span class="text-3xl font-semibold text-[#555]">
+                  {{ hasCourseStatus ? totalCourses : '—' }}
+                </span>
+                <span class="text-xs text-[#999]">Courses</span>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+
+              <div class="flex items-center gap-3">
+                <span class="h-3.5 w-3.5 rounded-full bg-[#60bdca]"></span>
+                <div>
+                  <p class="text-sm text-[#555]">Completed</p>
+                  <p class="text-xs text-[#999]">{{ courseStatus?.completed ?? '—' }}</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <span class="h-3.5 w-3.5 rounded-full bg-[#a064f5]"></span>
+                <div>
+                  <p class="text-sm text-[#555]">In-Progress</p>
+                  <p class="text-xs text-[#999]">{{ courseStatus?.inProgress ?? '—' }}</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <span class="h-3.5 w-3.5 rounded-full bg-[#5c73e8]"></span>
+                <div>
+                  <p class="text-sm text-[#555]">Not Started</p>
+                  <p class="text-xs text-[#999]">{{ courseStatus?.notStarted ?? '—' }}</p>
+                </div>
+              </div>
+
+              <p *ngIf="!hasCourseStatus" class="text-xs text-[#999]">
+                No data available
+              </p>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error()"
+      class="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-red-200 bg-red-50 p-5">
+
+      <p class="text-sm text-red-700">{{ error() }}</p>
+
+      <button type="button" (click)="retry()"
+        class="rounded-lg bg-red-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-red-700">
+        Retry
+      </button>
+    </div>
+
+  </div>
+</div>
