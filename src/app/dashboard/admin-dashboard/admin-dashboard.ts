@@ -8,6 +8,8 @@ import { AuthService,FEATURE } from '../../services/auth';
 import { ADMIN_MENU, isMenuVisible } from '../../config/admin-menu';
 import { PackageService } from '../../services/package.service';
 import { RolePageState } from '../../services/role.service';
+import { Location } from '@angular/common';   
+
 
 /** One item of the header breadcrumb. `link: null` = not clickable (current page or plain parent). */
 interface Breadcrumb {
@@ -37,6 +39,10 @@ export class AdminDashboard {
   private readonly packagesApi = inject(PackageService);
   private readonly rolePageState = inject(RolePageState);
 
+
+  private readonly location = inject(Location);
+goBack(): void { this.location.back(); }
+
   // ---------- sidebar menu (role / package based) ----------
   /** Company's own ADMIN? (only they get Role Management, Subscription and the package countdown) */
   readonly isCompanyAdmin = this.auth.isCompanyAdmin;
@@ -60,11 +66,16 @@ export class AdminDashboard {
       .subscribe();
   }
 
+
+
+
   // ---------- header: identity ----------
   // Single source of truth lives in AuthService (firstName + lastName, falls
   // back to email) - kept DRY instead of re-deriving it here.
   readonly displayName = this.auth.displayName;
   readonly roleLabel = computed(() => this.auth.user()?.role ?? '');
+  /** Learners get "My Certificate" in the profile menu. */
+  readonly isLearner = this.auth.isLearner;
 
   /** Short form for the header bar itself (limited width) - falls back to the
    *  full display name (e.g. the email) when firstName isn't available. */
@@ -274,6 +285,15 @@ export class AdminDashboard {
       ];
     }
 
+
+// 3. My Certificate breadcrumb
+if (/^\/admin-dashboard\/my-certificate\/?$/.test(path)) {
+  return [
+    { label: 'Dashboard', link: ['/admin-dashboard', 'learner-dashboard-home'], plain: true },
+    { label: 'Profile', link: null, plain: true },
+    { label: 'My Certificate', link: null, plain: true },
+  ];
+}
     // Change Password (/admin-dashboard/change-password)
     // Flow: Dashboard > Change Password
     if (/^\/admin-dashboard\/change-password\/?$/.test(path)) {

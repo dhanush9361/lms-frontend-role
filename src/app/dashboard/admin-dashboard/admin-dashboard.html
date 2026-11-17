@@ -194,6 +194,16 @@
             >
               Edit Profile
             </a>
+            @if (isLearner()) {
+              <a
+                role="menuitem"
+                routerLink="/admin-dashboard/my-certificate"
+                class="block w-full px-4 py-2.5 text-left text-xs text-[#555] transition hover:bg-[#f6f6f6]"
+                (click)="accountMenuOpen.set(false)"
+              >
+                My Certificate
+              </a>
+            }
             <a
               role="menuitem"
               routerLink="/admin-dashboard/change-password"
@@ -218,6 +228,20 @@
 
   <!-- ============ Sidebar + routed page content ============ -->
   <div class="relative flex-1">
+
+    <!-- "< Back" under the logo, shown on pages that have a breadcrumb -->
+    @if (breadcrumbs().length) {
+      <button
+        type="button"
+        class="fixed left-[26px] top-[82px] z-20 hidden items-center gap-1 text-xs text-[#4b4b4b] outline-none transition-colors hover:text-[#4694A4] focus-visible:ring-2 focus-visible:ring-[#4694A4]/40 sm:flex"
+        aria-label="Go back"
+        (click)="goBack()"
+      >
+        <span aria-hidden="true">&lt;</span>
+        <span>Back</span>
+      </button>
+    }
+
     <!-- Decorative curved background shape -->
     <aside
       class="pointer-events-none fixed left-0 top-16 z-0 hidden h-[calc(100vh-4rem)] w-[clamp(48px,4.5vw,84px)] text-[#5abacb] sm:block"

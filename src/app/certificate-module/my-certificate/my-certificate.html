@@ -1,0 +1,156 @@
+<div class="px-4 pb-7 pt-2 font-sans text-[#4b4b4b] sm:px-6 lg:px-10">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-[22px] font-semibold text-[#4b4b4b]">My Certificate</h1>
+      <p class="mt-1 text-[12px] text-[#4b4b4b]">Download your certificates which you have earned</p>
+    </div>
+    @if (previewFor()) {
+      <button
+        type="button"
+        class="mt-1 shrink-0 rounded text-[12px] text-[#4b4b4b] outline-none transition-colors hover:text-[#4694A4] focus-visible:ring-2 focus-visible:ring-[#61b7c5]/60"
+        (click)="closePreview()"
+      >&lt; Back to list</button>
+    }
+  </div>
+
+  @if (previewFor(); as item) {
+
+    <!-- ============ Preview: opens in the page itself, sized to fit the screen (no scroll) ============ -->
+    <section class="mt-5 flex justify-center md:mt-[27px]" aria-label="Certificate preview" aria-live="polite">
+      @if (previewLoading()) {
+        <div class="grid place-items-center rounded-2xl bg-[#f5f5f5] text-[12px] text-[#6d7476]" [style.width.px]="previewWidth()" [style.height.px]="previewWidth() / 1.4142" role="status">Loading certificate…</div>
+      } @else if (previewError()) {
+        <p class="w-full rounded-xl bg-red-50 px-4 py-6 text-center text-[12px] text-red-700" role="alert">{{ previewError() }}</p>
+      } @else if (previewDetail(); as detail) {
+        <div class="relative overflow-hidden rounded-2xl">
+          <app-certificate-view [template]="detail.template" [values]="previewValues()" [width]="previewWidth()" />
+
+          <!-- Download icon on the certificate, top-right -->
+          <button
+            type="button"
+            class="absolute right-5 top-5 grid size-10 place-items-center rounded-full text-white outline-none transition-colors hover:bg-black/25 focus-visible:ring-2 focus-visible:ring-white/70 disabled:cursor-wait disabled:opacity-60"
+            [attr.aria-label]="'Download certificate: ' + item.courseName"
+            [attr.title]="downloadingId() === item.id ? 'Preparing PDF…' : 'Download'"
+            [disabled]="downloadingId() !== null"
+            (click)="download(item)"
+          >
+            @if (downloadingId() === item.id) {
+              <span class="size-5 animate-spin rounded-full border-2 border-white/40 border-t-white motion-reduce:animate-none" aria-hidden="true"></span>
+            } @else {
+              <svg viewBox="0 0 24 24" class="size-[26px] fill-none stroke-current drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" stroke-width="2.4" aria-hidden="true">
+                <path d="M12 3v11m0 0-4-4m4 4 4-4M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            }
+          </button>
+        </div>
+      }
+    </section>
+
+    @if (downloadError()) {
+      <p class="mt-3 rounded-xl bg-red-50 px-4 py-3 text-center text-[11px] text-red-700" role="alert">{{ downloadError() }}</p>
+    }
+
+  } @else {
+
+    <!-- ============ List ============ -->
+    <section
+      class="mt-5 flex min-h-[65vh] flex-col rounded-2xl bg-white p-4 sm:h-[calc(100vh-190px)] sm:min-h-0 sm:p-6"
+      aria-label="My certificates"
+    >
+      <div class="flex min-h-0 flex-1 flex-col overflow-y-auto" aria-live="polite">
+
+        <!-- column heads (wide screens), stays on top while the rows scroll -->
+        <div class="sticky top-0 z-10 hidden bg-white pb-3 md:block" aria-hidden="true">
+          <div class="grid h-[54px] grid-cols-[208px_minmax(0,1fr)_130px_160px] items-center rounded-2xl bg-[#f5f5f5] pl-[22px] pr-4 text-[12px] text-[#4b4b4b]">
+            <span>Course Name</span>
+            <span class="pl-[6px]">Issue date</span>
+            <span class="text-center">Preview</span>
+            <span class="text-center">Download Certificate</span>
+          </div>
+        </div>
+
+        <!-- Gray rows block: grows to the bottom of the white panel -->
+        <div class="flex-1 rounded-2xl bg-[#f5f5f5]">
+          @if (loading()) {
+            <div class="space-y-3 p-4" role="status" aria-label="Loading certificates">
+              @for (row of [1, 2, 3, 4]; track row) {
+                <div class="h-10 animate-pulse rounded-lg bg-white/70"></div>
+              }
+            </div>
+          } @else if (loadError()) {
+            <div class="p-8 text-center" role="alert">
+              <p class="text-[12px] text-red-700">{{ loadError() }}</p>
+              <button
+                type="button"
+                class="mt-4 h-8 rounded-full bg-[#61b7c5] px-6 text-[11px] font-medium text-white outline-none transition-colors hover:bg-[#489daa] focus-visible:ring-2 focus-visible:ring-[#61b7c5]/60 focus-visible:ring-offset-2"
+                (click)="load()"
+              >Retry</button>
+            </div>
+          } @else if (!items().length) {
+            <div class="grid place-items-center gap-1 px-6 py-16 text-center">
+              <h2 class="text-[16px] font-medium text-[#4b4b4b]">No certificates yet</h2>
+              <p class="text-[11px] text-[#6d7476]">Complete a course to earn your certificate. It will appear here.</p>
+            </div>
+          } @else {
+            <ul>
+              @for (item of items(); track item.id) {
+                <li
+                  class="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-4 gap-y-1 border-b border-white px-4 py-4 text-[12px] last:border-b-0 md:h-[59px] md:grid-cols-[208px_minmax(0,1fr)_130px_160px] md:gap-x-0 md:gap-y-0 md:border-b-0 md:py-0 md:pl-[22px] md:pr-4"
+                >
+                  <span class="col-span-1 min-w-0 truncate md:col-span-1" [attr.title]="item.courseName">{{ item.courseName }}</span>
+                  <span class="order-last col-span-3 text-[11px] text-[#6d7476] md:order-none md:col-span-1 md:text-[12px] md:text-[#4b4b4b]">
+                    <span class="md:hidden">Issued: </span>{{ item.issuedAt | date: 'dd-MM-yyyy' }}
+                  </span>
+
+                  <span class="flex justify-center">
+                    <button
+                      type="button"
+                      class="grid size-9 place-items-center rounded-full text-[#61b7c5] outline-none transition-colors hover:bg-white focus-visible:ring-2 focus-visible:ring-[#61b7c5]/60"
+                      [attr.aria-label]="'Preview certificate: ' + item.courseName"
+                      title="Preview"
+                      (click)="openPreview(item)"
+                    >
+                      <svg viewBox="0 0 24 24" class="size-[22px] fill-current" aria-hidden="true">
+                        <path d="M12 5C6.5 5 2.7 9.1 1.4 11.3a1.5 1.5 0 0 0 0 1.4C2.7 14.9 6.5 19 12 19s9.3-4.1 10.6-6.3a1.5 1.5 0 0 0 0-1.4C21.3 9.1 17.5 5 12 5Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-6.2a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4Z" />
+                      </svg>
+                    </button>
+                  </span>
+
+                  <span class="flex justify-center">
+                    <button
+                      type="button"
+                      class="grid size-9 place-items-center rounded-full text-[#7cc3ce] outline-none transition-colors hover:bg-white focus-visible:ring-2 focus-visible:ring-[#61b7c5]/60 disabled:cursor-wait disabled:opacity-60"
+                      [attr.aria-label]="'Download certificate: ' + item.courseName"
+                      [attr.title]="downloadingId() === item.id ? 'Preparing PDF…' : 'Download'"
+                      [disabled]="downloadingId() !== null"
+                      (click)="download(item)"
+                    >
+                      @if (downloadingId() === item.id) {
+                        <span class="size-5 animate-spin rounded-full border-2 border-[#bfe3ea] border-t-[#61b7c5] motion-reduce:animate-none" aria-hidden="true"></span>
+                      } @else {
+                        <svg viewBox="0 0 24 24" class="size-[22px] fill-none stroke-current" stroke-width="2.2" aria-hidden="true">
+                          <path d="M12 4v10m0 0-4-4m4 4 4-4M5 19h14" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                      }
+                    </button>
+                  </span>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+
+      @if (downloadError()) {
+        <p class="mt-3 shrink-0 rounded-xl bg-red-50 px-4 py-3 text-center text-[11px] text-red-700" role="alert">{{ downloadError() }}</p>
+      }
+    </section>
+  }
+</div>
+
+<!-- The certificate drawn off-screen only while its PDF is being made -->
+@if (pdfDetail(); as detail) {
+  <div class="pointer-events-none fixed left-[-10000px] top-0" aria-hidden="true">
+    <app-certificate-view #pdfView [template]="detail.template" [values]="pdfValues()" [width]="pdfWidth" />
+  </div>
+}

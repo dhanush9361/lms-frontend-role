@@ -246,6 +246,15 @@ export const routes: Routes = [
   title: 'Course Content',
 },
 
+// Learner profile -> My Certificate (the certificates earned by completing courses) - learners only
+{
+  path: 'my-certificate',
+  canActivate: [learnerHomeGuard],
+  loadComponent: () =>
+    import('./certificate-module/my-certificate/my-certificate').then((m) => m.MyCertificate),
+  title: 'My Certificate',
+},
+
 {
   path: 'edit-profile',
   loadComponent: () =>
